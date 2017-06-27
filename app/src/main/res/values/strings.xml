@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name" translatable="false">Coding Challenge</string>
+    <string name="title_activity_movies">Movies</string>
+    <string name="movies_tab">Movies</string>
+    <string name="shows_tab">TV Shows</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+</resources>
