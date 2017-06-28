@@ -9,7 +9,7 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.proyectosyntax.codingchallenge"
-        minSdkVersion 16
+        minSdkVersion 18
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -23,10 +23,6 @@ android {
     }
 }
 
-repositories {
-    jcenter()
-    maven { url "https://jitpack.io" }
-}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])

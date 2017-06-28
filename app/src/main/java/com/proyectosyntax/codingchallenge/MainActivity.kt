@@ -16,7 +16,9 @@ import kotlinx.android.synthetic.main.content_main.*
 
 import android.app.SearchManager
 import android.content.Context
+import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.SearchView
+import android.view.Gravity
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -37,6 +39,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         navigationView.setNavigationItemSelectedListener(this)
         navigationView.menu.getItem(0).setChecked(true)
+
+        categoriesView.setNavigationItemSelectedListener(this)
+        categoriesView.menu.getItem(0).setChecked(true)
+
         toolbar.title = navigationView.menu.getItem(0).title
         val mSectionsPagerAdapter = ViewPagerAdapter(supportFragmentManager)
         container.adapter = mSectionsPagerAdapter
@@ -65,7 +71,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.action_settings -> return true
+            R.id.filters -> {
+                drawer_layout.openDrawer(Gravity.END)
+                return true
+            }
             else -> return super.onOptionsItemSelected(item)
         }
     }

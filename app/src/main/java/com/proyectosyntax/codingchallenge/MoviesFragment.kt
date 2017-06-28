@@ -16,14 +16,12 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.json.JSONObject
 import com.proyectosyntax.codingchallenge.Models.Movie
-import com.proyectosyntax.codingchallenge.Models.Show
-import android.R.attr.spacing
 
 
-class MoviesFragment : Fragment() {
+class MoviesFragment : Fragment(){
 
     var mListAdapter: ListAdapter? = null
-
+    var titlesList: ShimmerRecyclerView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,13 +40,16 @@ class MoviesFragment : Fragment() {
         queue.add(request)
     }
 
+
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater!!.inflate(R.layout.fragment_list, container, false)
-        val titlesList = rootView.findViewById(R.id.titlesList) as ShimmerRecyclerView
-        titlesList.showShimmerAdapter()
+        titlesList = rootView.findViewById(R.id.titlesList) as ShimmerRecyclerView
+        titlesList!!.showShimmerAdapter()
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.item_spacing)
-        titlesList.addItemDecoration(SpacesItemDecoration(spacingInPixels))
-        titlesList.addOnItemTouchListener(RecyclerViewListener(context, titlesList, object : RecyclerViewListener.ClickListener {
+        titlesList!!.addItemDecoration(SpacesItemDecoration(spacingInPixels))
+
+
+        titlesList!!.addOnItemTouchListener(RecyclerViewListener(context, titlesList!!, object : RecyclerViewListener.ClickListener {
             override fun onClick(view: View, position: Int) {
                 val tappedItem = mListAdapter?.getItem(position)
                 val intent: Intent = Intent(context, DetailsActivity::class.java)
@@ -59,9 +60,9 @@ class MoviesFragment : Fragment() {
 
 
         }))
-        titlesList.layoutManager = GridLayoutManager(activity, 2)
+        titlesList!!.layoutManager = GridLayoutManager(activity, 2)
         mListAdapter = ListAdapter(activity, ArrayList<Any>())
-        titlesList.adapter = mListAdapter
+        titlesList!!.adapter = mListAdapter
         return rootView
     }
 
