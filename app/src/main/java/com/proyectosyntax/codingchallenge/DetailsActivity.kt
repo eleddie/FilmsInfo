@@ -3,6 +3,7 @@ package com.proyectosyntax.codingchallenge
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import com.proyectosyntax.codingchallenge.Models.Movie
 import com.proyectosyntax.codingchallenge.Models.Show
 import com.squareup.picasso.Picasso
@@ -24,24 +25,33 @@ class DetailsActivity : AppCompatActivity() {
         if (type == 1) {
             val item: Movie = ObjectSerializer.deserialize(serializedItem) as Movie
             Picasso.with(this)
-                    .load("${resources.getString(R.string.image_url)}${item.posterPath}")
+                    .load("${resources.getString(R.string.image_url_780)}${item.backdropPath}")
                     .placeholder(R.drawable.poster_placeholder)
-                    .into(movieImage)
+                    .into(backdrop)
+            Picasso.with(this)
+                    .load("${resources.getString(R.string.image_url_500)}${item.posterPath}")
+                    .placeholder(R.drawable.poster_placeholder)
+                    .into(poster)
             name.text = item.title
             yearGenre.text = item.releaseDate
-            rating.rating = item.voteAverage
+            rating.rating = (item.voteAverage/10f)*5
             overview.text = item.overview
         } else {
             val item: Show = ObjectSerializer.deserialize(serializedItem) as Show
             Picasso.with(this)
-                    .load("${resources.getString(R.string.image_url)}${item.posterPath}")
+                    .load("${resources.getString(R.string.image_url_780)}${item.backdropPath}")
                     .placeholder(R.drawable.poster_placeholder)
-                    .into(movieImage)
+                    .into(backdrop)
+            Picasso.with(this)
+                    .load("${resources.getString(R.string.image_url_500)}${item.posterPath}")
+                    .placeholder(R.drawable.poster_placeholder)
+                    .into(poster)
             name.text = item.name
             yearGenre.text = item.firstAirDate
-            rating.rating = item.voteAverage
+            rating.rating = (item.voteAverage/10f)*5
             overview.text = item.overview
         }
+
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()

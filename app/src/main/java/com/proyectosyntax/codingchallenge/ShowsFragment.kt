@@ -54,6 +54,8 @@ class ShowsFragment : Fragment() {
         val rootView = inflater!!.inflate(R.layout.fragment_list, container, false)
         val titlesList = rootView.findViewById(R.id.titlesList) as ShimmerRecyclerView
         titlesList.showShimmerAdapter()
+        val spacingInPixels = resources.getDimensionPixelSize(R.dimen.item_spacing)
+        titlesList.addItemDecoration(SpacesItemDecoration(spacingInPixels))
         titlesList.addOnItemTouchListener(RecyclerViewListener(context, titlesList, object : RecyclerViewListener.ClickListener {
             override fun onClick(view: View, position: Int) {
                 val tappedItem = mListAdapter?.getItem(position)

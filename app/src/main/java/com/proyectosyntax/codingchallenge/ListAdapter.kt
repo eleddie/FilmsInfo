@@ -7,9 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import com.proyectosyntax.codingchallenge.Models.Movie
 import com.proyectosyntax.codingchallenge.Models.Show
+import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import java.util.*
 
@@ -18,20 +20,31 @@ class ListAdapter(var context: Context, private var items: ArrayList<Any>) : Rec
 
     override fun onBindViewHolder(holder: MyHolder?, position: Int) {
         val current = items[position]
+
+        val imageCallback = object : Callback {
+            override fun onSuccess() {
+                holder!!.loadingImage.visibility = View.GONE
+            }
+
+            override fun onError() {
+                Log.e("Error on loading image", "Error")
+            }
+        }
+
         if (current is Movie) {
             holder!!.title.text = current.title
             holder.year.text = current.releaseDate
             Picasso.with(context)
-                    .load("${context.resources.getString(R.string.image_url)}${current.posterPath}")
+                    .load("${context.resources.getString(R.string.image_url_500)}${current.posterPath}")
                     .placeholder(R.drawable.poster_placeholder)
-                    .into(holder.imageId)
+                    .into(holder.imageId, imageCallback)
         } else if (current is Show) {
             holder!!.title.text = current.name
             holder.year.text = current.firstAirDate
             Picasso.with(context)
-                    .load("${context.resources.getString(R.string.image_url)}${current.posterPath}")
+                    .load("${context.resources.getString(R.string.image_url_500)}${current.posterPath}")
                     .placeholder(R.drawable.poster_placeholder)
-                    .into(holder.imageId)
+                    .into(holder.imageId, imageCallback)
         }
     }
 
@@ -50,6 +63,7 @@ class ListAdapter(var context: Context, private var items: ArrayList<Any>) : Rec
         var imageId: ImageView = itemView.findViewById(R.id.movieImage) as ImageView
         var title: TextView = itemView.findViewById(R.id.movieTitle) as TextView
         var year: TextView = itemView.findViewById(R.id.movieYear) as TextView
+        var loadingImage: ProgressBar = itemView.findViewById(R.id.loadingImage) as ProgressBar
     }
 
     fun setItems(items: ArrayList<Any>) {
