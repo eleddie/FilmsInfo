@@ -1,6 +1,5 @@
 package com.proyectosyntax.codingchallenge
 
-import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
@@ -15,21 +14,21 @@ import com.android.volley.toolbox.Volley
 import com.cooltechworks.views.shimmer.ShimmerRecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.proyectosyntax.codingchallenge.Models.Show
 import org.json.JSONObject
-import com.proyectosyntax.codingchallenge.Models.Movie
 
 
-class MoviesFragment : Fragment() {
-
+class ShowsFragment : Fragment() {
     var mListAdapter: ListAdapter? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val queue: RequestQueue = Volley.newRequestQueue(activity)
-        val url = "${activity.resources.getString(R.string.api_url)}movie/${arguments.getString("extra")}?api_key=${activity.resources.getString(R.string.api_key)}"
-        Log.i("URL", url)
-        val request = object : JsonObjectRequest(Request.Method.GET, url, null,
+        val url = "${activity.resources.getString(R.string.api_url)}tv/${arguments.getString("extra")}?api_key=${activity.resources.getString(R.string.api_key)}"
+        val request = object : JsonObjectRequest(
+                Request.Method.GET, url, null,
                 Response.Listener<JSONObject> { response -> connectionEstablished(response) },
                 Response.ErrorListener { error -> handleError(error) }) {
             override fun getHeaders(): Map<String, String> {
@@ -41,6 +40,17 @@ class MoviesFragment : Fragment() {
         queue.add(request)
     }
 
+    private fun connectionEstablished(response: JSONObject?) {
+        val results = response?.getString("results")
+        if (results != null) {
+            val gson = Gson()
+            val items: ArrayList<Any> = gson.fromJson(results, object : TypeToken<ArrayList<Show>>() {}.type)
+            mListAdapter!!.setItems(items)
+        }
+    }
+
+    private fun handleError(error: VolleyError?) {}
+
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater!!.inflate(R.layout.fragment_movies, container, false)
         val titlesList = rootView.findViewById(R.id.titlesList) as ShimmerRecyclerView
@@ -51,26 +61,12 @@ class MoviesFragment : Fragment() {
         return rootView
     }
 
-    private fun connectionEstablished(response: JSONObject?) {
-        val results = response?.getString("results")
-        Log.i("Results", results)
-        if (results != null) {
-            val gson = Gson()
-            val items: ArrayList<Any> = gson.fromJson(results, object : TypeToken<ArrayList<Movie>>() {}.type)
-            mListAdapter!!.setItems(items)
-        }
-    }
-
-    private fun handleError(error: VolleyError?) {
-        Log.i("Error", error.toString())
-    }
-
 
     companion object {
-        fun newInstance(extra: String): MoviesFragment {
-            val fragment = MoviesFragment()
+        fun newInstance(extra:String): ShowsFragment {
+            val fragment = ShowsFragment()
             val args = Bundle()
-            args.putString("extra", extra)
+            args.putString("extra",extra)
             fragment.arguments = args
             return fragment
         }

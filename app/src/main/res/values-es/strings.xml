@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="movies_tab">Peliculas</string>
-    <string name="shows_tab">Series</string>
+    <string name="movies">Peliculas</string>
+    <string name="shows">Series</string>
     <string name="action_settings">Ajustes</string>
     <string name="title_activity_movies">Peliculas</string>
+    <string name="top_rated">Más Valoradas</string>
+    <string name="upcoming">Próximamente</string>
+    <string name="search_title">Buscar</string>
 </resources>
