@@ -1,6 +1,7 @@
 package com.proyectosyntax.codingchallenge.Models
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class Movie(
         @SerializedName("vote_count") var voteCount: Int,
@@ -17,4 +18,4 @@ data class Movie(
         @SerializedName("adult") var adult: Boolean,
         @SerializedName("overview") var overview: String,
         @SerializedName("release_date") var releaseDate: String
-)
+) : Serializable

@@ -1,10 +1,9 @@
 package com.proyectosyntax.codingchallenge
 
-import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +16,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.json.JSONObject
 import com.proyectosyntax.codingchallenge.Models.Movie
+import com.proyectosyntax.codingchallenge.Models.Show
 
 
 class MoviesFragment : Fragment() {
@@ -42,9 +42,20 @@ class MoviesFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater!!.inflate(R.layout.fragment_movies, container, false)
+        val rootView = inflater!!.inflate(R.layout.fragment_list, container, false)
         val titlesList = rootView.findViewById(R.id.titlesList) as ShimmerRecyclerView
         titlesList.showShimmerAdapter()
+        titlesList.addOnItemTouchListener(RecyclerViewListener(context, titlesList, object : RecyclerViewListener.ClickListener {
+            override fun onClick(view: View, position: Int) {
+                val tappedItem = mListAdapter?.getItem(position)
+                val intent: Intent = Intent(context, DetailsActivity::class.java)
+                intent.putExtra("item", ObjectSerializer.serialize(tappedItem as Movie))
+                intent.putExtra("type", 1)
+                startActivity(intent)
+            }
+
+
+        }))
         titlesList.layoutManager = GridLayoutManager(activity, 2)
         mListAdapter = ListAdapter(activity, ArrayList<Any>())
         titlesList.adapter = mListAdapter

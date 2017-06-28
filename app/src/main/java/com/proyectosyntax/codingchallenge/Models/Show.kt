@@ -1,6 +1,7 @@
 package com.proyectosyntax.codingchallenge.Models
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 import java.util.ArrayList
 
 data class Show(
@@ -17,4 +18,4 @@ data class Show(
         @SerializedName("backdrop_path") var backdropPath: String,
         @SerializedName("overview") var overview: String,
         @SerializedName("origin_country") var originCountry: ArrayList<String>
-)
+) : Serializable

@@ -55,4 +55,8 @@ class ListAdapter(var context: Context, private var items: ArrayList<Any>) : Rec
     fun setItems(items: ArrayList<Any>) {
         this.items = items
     }
+
+    fun getItem(position: Int): Any {
+        return items[position]
+    }
 }

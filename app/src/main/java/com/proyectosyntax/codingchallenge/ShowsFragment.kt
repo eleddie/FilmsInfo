@@ -1,10 +1,9 @@
 package com.proyectosyntax.codingchallenge
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,9 +51,20 @@ class ShowsFragment : Fragment() {
     private fun handleError(error: VolleyError?) {}
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater!!.inflate(R.layout.fragment_movies, container, false)
+        val rootView = inflater!!.inflate(R.layout.fragment_list, container, false)
         val titlesList = rootView.findViewById(R.id.titlesList) as ShimmerRecyclerView
         titlesList.showShimmerAdapter()
+        titlesList.addOnItemTouchListener(RecyclerViewListener(context, titlesList, object : RecyclerViewListener.ClickListener {
+            override fun onClick(view: View, position: Int) {
+                val tappedItem = mListAdapter?.getItem(position)
+                val intent: Intent = Intent(context, DetailsActivity::class.java)
+                intent.putExtra("item", ObjectSerializer.serialize(tappedItem as Show))
+                intent.putExtra("type", 2)
+                startActivity(intent)
+            }
+
+
+        }))
         titlesList.layoutManager = GridLayoutManager(activity, 2)
         mListAdapter = ListAdapter(activity, ArrayList<Any>())
         titlesList.adapter = mListAdapter
@@ -63,10 +73,10 @@ class ShowsFragment : Fragment() {
 
 
     companion object {
-        fun newInstance(extra:String): ShowsFragment {
+        fun newInstance(extra: String): ShowsFragment {
             val fragment = ShowsFragment()
             val args = Bundle()
-            args.putString("extra",extra)
+            args.putString("extra", extra)
             fragment.arguments = args
             return fragment
         }
