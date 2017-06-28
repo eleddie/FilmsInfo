@@ -21,6 +21,11 @@ import android.support.v7.widget.SearchView
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    val EXTRA_POPULAR = "popular"
+    var EXTRA_SELECTED = EXTRA_POPULAR
+    val EXTRA_TOP_RATED = "top_rated"
+    val EXTRA_UPCOMING = "upcoming"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -30,7 +35,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
 
-        nav_view.setNavigationItemSelectedListener(this)
+        navigationView.setNavigationItemSelectedListener(this)
+        navigationView.menu.getItem(0).setChecked(true)
+        toolbar.title = navigationView.menu.getItem(0).title
         val mSectionsPagerAdapter = ViewPagerAdapter(supportFragmentManager)
         container.adapter = mSectionsPagerAdapter
         container!!.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
@@ -50,7 +57,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         menuInflater.inflate(R.menu.main, menu)
 
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        val searchView:SearchView = menu.findItem(R.id.action_search).actionView as SearchView
+        val searchView: SearchView = menu.findItem(R.id.action_search).actionView as SearchView
         searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
 
         return true
@@ -64,12 +71,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        toolbar.title = item.title
         when (item.itemId) {
             R.id.nav_popular -> {
+                EXTRA_SELECTED = EXTRA_POPULAR
             }
             R.id.nav_top_rated -> {
+                EXTRA_SELECTED = EXTRA_TOP_RATED
             }
             R.id.nav_upcoming -> {
+                EXTRA_SELECTED = EXTRA_UPCOMING
             }
         }
 
@@ -77,15 +88,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+
     inner class ViewPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
-        val EXTRA_POPULAR = "popular"
-        val EXTRA_TOP_RATED = "top_rated"
-        val EXTRA_UPCOMING = "upcoming"
+
 
         override fun getItem(position: Int): Fragment {
             when (position) {
-                0 -> return MoviesFragment.newInstance(EXTRA_POPULAR)
-                else -> return ShowsFragment.newInstance(EXTRA_POPULAR)
+                0 -> return MoviesFragment.newInstance(EXTRA_SELECTED)
+                else -> return ShowsFragment.newInstance(EXTRA_SELECTED)
             }
         }
 

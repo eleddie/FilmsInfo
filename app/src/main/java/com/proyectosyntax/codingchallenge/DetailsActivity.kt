@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.View
 import com.proyectosyntax.codingchallenge.Models.Movie
 import com.proyectosyntax.codingchallenge.Models.Show
 import com.squareup.picasso.Picasso
@@ -34,7 +35,7 @@ class DetailsActivity : AppCompatActivity() {
                     .into(poster)
             name.text = item.title
             yearGenre.text = item.releaseDate
-            rating.rating = (item.voteAverage/10f)*5
+            rating.rating = (item.voteAverage / 10f) * 5
             overview.text = item.overview
         } else {
             val item: Show = ObjectSerializer.deserialize(serializedItem) as Show
@@ -48,7 +49,7 @@ class DetailsActivity : AppCompatActivity() {
                     .into(poster)
             name.text = item.name
             yearGenre.text = item.firstAirDate
-            rating.rating = (item.voteAverage/10f)*5
+            rating.rating = (item.voteAverage / 10f) * 5
             overview.text = item.overview
         }
 
