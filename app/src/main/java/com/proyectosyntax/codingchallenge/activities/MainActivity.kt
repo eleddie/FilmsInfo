@@ -1,4 +1,4 @@
-package com.proyectosyntax.codingchallenge
+package com.proyectosyntax.codingchallenge.activities
 
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -11,13 +11,16 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_main.*
-
 import android.app.SearchManager
 import android.content.Context
 import android.support.v7.widget.SearchView
 import android.util.Log
+import com.proyectosyntax.codingchallenge.fragments.CategoriesFragment
+import com.proyectosyntax.codingchallenge.fragments.MoviesFragment
+import com.proyectosyntax.codingchallenge.R
+import com.proyectosyntax.codingchallenge.fragments.ShowsFragment
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, CategoriesFragment.OnCategoryItemSelectedListener {
@@ -26,9 +29,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     val EXTRA_TOP_RATED = "top_rated"
     val EXTRA_UPCOMING = "upcoming"
 
-    var moviesFragment: MoviesFragment? = null
-    var categoriesFragment: CategoriesFragment? = null
-    var showsFragment: ShowsFragment? = null
+    lateinit var moviesFragment: MoviesFragment
+    lateinit var categoriesFragment: CategoriesFragment
+    lateinit var showsFragment: ShowsFragment
     var selectedCategories = HashMap<Int, String>()
 
 
@@ -94,23 +97,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.nav_popular_movies -> {
                 tabs.getTabAt(1)?.select()
-                moviesFragment!!.updateList(EXTRA_POPULAR)
+                moviesFragment.updateList(EXTRA_POPULAR)
             }
             R.id.nav_top_rated_movies -> {
                 tabs.getTabAt(1)?.select()
-                moviesFragment!!.updateList(EXTRA_TOP_RATED)
+                moviesFragment.updateList(EXTRA_TOP_RATED)
             }
             R.id.nav_upcoming_movies -> {
                 tabs.getTabAt(1)?.select()
-                moviesFragment!!.updateList(EXTRA_UPCOMING)
+                moviesFragment.updateList(EXTRA_UPCOMING)
             }
             R.id.nav_popular_shows -> {
                 tabs.getTabAt(2)?.select()
-                showsFragment!!.updateList(EXTRA_POPULAR)
+                showsFragment.updateList(EXTRA_POPULAR)
             }
             R.id.nav_top_rated_shows -> {
                 tabs.getTabAt(2)?.select()
-                showsFragment!!.updateList(EXTRA_TOP_RATED)
+                showsFragment.updateList(EXTRA_TOP_RATED)
             }
         }
 
@@ -123,20 +126,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Log.i("SelectedCategory", item.toString())
         if (selectedCategories[item.first] == null) {
             selectedCategories.put(item.first, item.second)
-        }else{
+        } else {
             selectedCategories.remove(item.first)
         }
-        if (moviesFragment != null) {
-            moviesFragment!!.search(selectedCategories.toList())
+        if (selectedCategories.size > 0) {
+            moviesFragment.search(selectedCategories.toList())
+            showsFragment.search(selectedCategories.toList())
+        }else{
+            moviesFragment.updateList(EXTRA_POPULAR)
+            showsFragment.updateList(EXTRA_POPULAR)
         }
     }
 
     inner class ViewPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
         override fun getItem(position: Int): Fragment {
             when (position) {
-                0 -> return categoriesFragment!!
-                1 -> return moviesFragment!!
-                else -> return showsFragment!!
+                0 -> return categoriesFragment
+                1 -> return moviesFragment
+                else -> return showsFragment
             }
         }
 

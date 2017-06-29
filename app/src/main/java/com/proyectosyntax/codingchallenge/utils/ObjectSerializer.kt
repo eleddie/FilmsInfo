@@ -1,28 +1,27 @@
-package com.proyectosyntax.codingchallenge
+package com.proyectosyntax.codingchallenge.utils
 
-import java.io.*
 import kotlin.experimental.and
 
 object ObjectSerializer {
-    @Throws(IOException::class)
-    fun serialize(obj: Serializable): String {
+    @Throws(java.io.IOException::class)
+    fun serialize(obj: java.io.Serializable): String {
         try {
-            val serialObj = ByteArrayOutputStream()
-            val objStream = ObjectOutputStream(serialObj)
+            val serialObj = java.io.ByteArrayOutputStream()
+            val objStream = java.io.ObjectOutputStream(serialObj)
             objStream.writeObject(obj)
             objStream.close()
-            return encodeBytes(serialObj.toByteArray())
+            return ObjectSerializer.encodeBytes(serialObj.toByteArray())
         } catch (e: Exception) {
             throw RuntimeException(e)
         }
     }
 
-    @Throws(IOException::class)
+    @Throws(java.io.IOException::class)
     fun deserialize(str: String): Any? {
         if (str.isEmpty()) return null
         try {
-            val serialObj = ByteArrayInputStream(decodeBytes(str))
-            val objStream = ObjectInputStream(serialObj)
+            val serialObj = java.io.ByteArrayInputStream(decodeBytes(str))
+            val objStream = java.io.ObjectInputStream(serialObj)
             return objStream.readObject()
         } catch (e: Exception) {
             throw RuntimeException(e)

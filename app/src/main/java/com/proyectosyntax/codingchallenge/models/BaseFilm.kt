@@ -1,4 +1,4 @@
-package com.proyectosyntax.codingchallenge.Models
+package com.proyectosyntax.codingchallenge.models
 
 import com.google.gson.annotations.SerializedName
 

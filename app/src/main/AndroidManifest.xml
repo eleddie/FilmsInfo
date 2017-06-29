@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar">
 
@@ -22,16 +22,16 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".DetailsActivity"
+            android:name=".activities.DetailsActivity"
             android:label="@string/title_activity_details"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.proyectosyntax.codingchallenge.MainActivity" />
+                android:value="com.proyectosyntax.codingchallenge.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".SplashScreen"
+            android:name=".activities.SplashScreen"
             android:noHistory="true"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

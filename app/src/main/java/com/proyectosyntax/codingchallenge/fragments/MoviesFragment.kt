@@ -1,4 +1,4 @@
-package com.proyectosyntax.codingchallenge
+package com.proyectosyntax.codingchallenge.fragments
 
 import android.content.Intent
 import android.os.Bundle
@@ -14,23 +14,54 @@ import com.android.volley.toolbox.Volley
 import com.cooltechworks.views.shimmer.ShimmerRecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.proyectosyntax.codingchallenge.Models.BaseFilm
+import com.proyectosyntax.codingchallenge.activities.DetailsActivity
+import com.proyectosyntax.codingchallenge.adapters.ListAdapter
+import com.proyectosyntax.codingchallenge.models.BaseFilm
 import org.json.JSONObject
-import com.proyectosyntax.codingchallenge.Models.Movie
+import com.proyectosyntax.codingchallenge.models.Movie
+import com.proyectosyntax.codingchallenge.R
+import com.proyectosyntax.codingchallenge.utils.ObjectSerializer
+import com.proyectosyntax.codingchallenge.utils.RecyclerViewListener
+import com.proyectosyntax.codingchallenge.utils.SpacesItemDecoration
 
 
 class MoviesFragment : Fragment() {
 
-    var mListAdapter: ListAdapter? = null
-    var titlesList: ShimmerRecyclerView? = null
+    lateinit var mListAdapter: ListAdapter
+    lateinit var titlesList: ShimmerRecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mListAdapter = ListAdapter(activity, ArrayList<BaseFilm>())
         updateList(arguments.getString("extra"))
     }
 
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val rootView = inflater!!.inflate(R.layout.fragment_list, container, false)
+        titlesList = rootView.findViewById(R.id.titlesList) as ShimmerRecyclerView
+        titlesList.showShimmerAdapter()
+        val spacingInPixels = resources.getDimensionPixelSize(R.dimen.item_spacing)
+        titlesList.addItemDecoration(SpacesItemDecoration(spacingInPixels))
+
+
+        titlesList.addOnItemTouchListener(RecyclerViewListener(context, titlesList, object : RecyclerViewListener.ClickListener {
+            override fun onClick(view: View, position: Int) {
+                val tappedItem = mListAdapter.getItem(position)
+                val intent: Intent = Intent(context, DetailsActivity::class.java)
+                intent.putExtra("item", ObjectSerializer.serialize(tappedItem as Movie))
+                intent.putExtra("type", 1)
+                startActivity(intent)
+            }
+
+
+        }))
+        titlesList.layoutManager = GridLayoutManager(activity, 2)
+        titlesList.adapter = mListAdapter
+        return rootView
+    }
+
     fun updateList(extra: String) {
-        mListAdapter?.setItems(ArrayList())
+        mListAdapter.setItems(ArrayList())
         val queue: RequestQueue = Volley.newRequestQueue(activity)
         val url = "${activity.resources.getString(R.string.api_url)}movie/$extra?api_key=${activity.resources.getString(R.string.api_key)}"
         val request = JsonObjectRequest(Request.Method.GET, url, null,
@@ -51,7 +82,7 @@ class MoviesFragment : Fragment() {
         Log.i("URL", url)
         Log.i("Genres", categories.toString())
 
-        mListAdapter?.setItems(ArrayList())
+        mListAdapter.setItems(ArrayList())
         val queue: RequestQueue = Volley.newRequestQueue(activity)
         val request = JsonObjectRequest(Request.Method.GET, url, null,
                 Response.Listener<JSONObject> { response -> connectionEstablished(response) },
@@ -59,46 +90,19 @@ class MoviesFragment : Fragment() {
         queue.add(request)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater!!.inflate(R.layout.fragment_list, container, false)
-        titlesList = rootView.findViewById(R.id.titlesList) as ShimmerRecyclerView
-        titlesList!!.showShimmerAdapter()
-        val spacingInPixels = resources.getDimensionPixelSize(R.dimen.item_spacing)
-        titlesList!!.addItemDecoration(SpacesItemDecoration(spacingInPixels))
-
-
-        mListAdapter = ListAdapter(activity, ArrayList<BaseFilm>())
-
-
-        titlesList!!.addOnItemTouchListener(RecyclerViewListener(context, titlesList!!, object : RecyclerViewListener.ClickListener {
-            override fun onClick(view: View, position: Int) {
-                val tappedItem = mListAdapter?.getItem(position)
-                val intent: Intent = Intent(context, DetailsActivity::class.java)
-                intent.putExtra("item", ObjectSerializer.serialize(tappedItem as Movie))
-                intent.putExtra("type", 1)
-                startActivity(intent)
-            }
-
-
-        }))
-        titlesList!!.layoutManager = GridLayoutManager(activity, 2)
-        titlesList!!.adapter = mListAdapter
-        return rootView
-    }
-
     private fun connectionEstablished(response: JSONObject?) {
         val results = response?.getString("results")
-        Log.i("Results", results)
+        Log.i("Results movie", results)
         if (results != null) {
             val gson = Gson()
             val items: ArrayList<BaseFilm> = gson.fromJson(results, object : TypeToken<ArrayList<Movie>>() {}.type)
-            mListAdapter!!.setItems(items)
-            mListAdapter!!.notifyDataSetChanged()
+            mListAdapter.setItems(items)
+            mListAdapter.notifyDataSetChanged()
         }
     }
 
     private fun handleError(error: VolleyError?) {
-        Log.i("Error", error.toString())
+        Log.e("Error Movie Req", error.toString())
     }
 
     companion object {

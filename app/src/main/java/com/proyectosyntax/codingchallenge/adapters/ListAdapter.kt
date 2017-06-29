@@ -1,4 +1,4 @@
-package com.proyectosyntax.codingchallenge
+package com.proyectosyntax.codingchallenge.adapters
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -9,9 +9,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
-import com.proyectosyntax.codingchallenge.Models.BaseFilm
-import com.proyectosyntax.codingchallenge.Models.Movie
-import com.proyectosyntax.codingchallenge.Models.Show
+import com.proyectosyntax.codingchallenge.models.BaseFilm
+import com.proyectosyntax.codingchallenge.models.Movie
+import com.proyectosyntax.codingchallenge.models.Show
+import com.proyectosyntax.codingchallenge.R
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import java.util.*
