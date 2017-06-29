@@ -8,4 +8,7 @@
     <string name="upcoming">Próximamente</string>
     <string name="search_title">Buscar</string>
     <string name="filters">Filtros</string>
+    <string name="all">Todo</string>
+    <string name="str_all_selected">Todas las categorieas</string>
+    <string name="categories">Categorias</string>
 </resources>

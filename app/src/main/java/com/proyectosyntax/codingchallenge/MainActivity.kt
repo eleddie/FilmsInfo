@@ -16,22 +16,34 @@ import kotlinx.android.synthetic.main.content_main.*
 
 import android.app.SearchManager
 import android.content.Context
-import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.SearchView
-import android.view.Gravity
+import android.util.Log
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, CategoriesFragment.OnCategoryItemSelectedListener {
 
     val EXTRA_POPULAR = "popular"
-    var EXTRA_SELECTED = EXTRA_POPULAR
     val EXTRA_TOP_RATED = "top_rated"
     val EXTRA_UPCOMING = "upcoming"
+
+    var moviesFragment: MoviesFragment? = null
+    var categoriesFragment: CategoriesFragment? = null
+    var showsFragment: ShowsFragment? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        val categories: HashMap<Int, String> = intent.extras.get("categories") as HashMap<Int, String>
+
+        Log.i("Categories", categories.toString())
+
+        moviesFragment = MoviesFragment.newInstance(EXTRA_POPULAR)
+        showsFragment = ShowsFragment.newInstance(this, EXTRA_POPULAR)
+        categoriesFragment = CategoriesFragment.newInstance(categories)
+
 
         val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
@@ -40,15 +52,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navigationView.setNavigationItemSelectedListener(this)
         navigationView.menu.getItem(0).setChecked(true)
 
-        categoriesView.setNavigationItemSelectedListener(this)
-        categoriesView.menu.getItem(0).setChecked(true)
-
         toolbar.title = navigationView.menu.getItem(0).title
         val mSectionsPagerAdapter = ViewPagerAdapter(supportFragmentManager)
+
         container.adapter = mSectionsPagerAdapter
         container!!.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
         tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(container))
+
+        tabs.getTabAt(1)?.select()
     }
+
 
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
@@ -69,45 +82,60 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.filters -> {
-                drawer_layout.openDrawer(Gravity.END)
-                return true
-            }
             else -> return super.onOptionsItemSelected(item)
         }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        toolbar.title = item.title
         when (item.itemId) {
-            R.id.nav_popular -> {
-                EXTRA_SELECTED = EXTRA_POPULAR
+            R.id.nav_popular_movies -> {
+                tabs.getTabAt(1)?.select()
+                moviesFragment!!.updateList(EXTRA_POPULAR)
             }
-            R.id.nav_top_rated -> {
-                EXTRA_SELECTED = EXTRA_TOP_RATED
+            R.id.nav_top_rated_movies -> {
+                tabs.getTabAt(1)?.select()
+                moviesFragment!!.updateList(EXTRA_TOP_RATED)
             }
-            R.id.nav_upcoming -> {
-                EXTRA_SELECTED = EXTRA_UPCOMING
+            R.id.nav_upcoming_movies -> {
+                tabs.getTabAt(1)?.select()
+                moviesFragment!!.updateList(EXTRA_UPCOMING)
+            }
+            R.id.nav_popular_shows -> {
+                tabs.getTabAt(2)?.select()
+                showsFragment!!.updateList(EXTRA_POPULAR)
+            }
+            R.id.nav_top_rated_shows -> {
+                tabs.getTabAt(2)?.select()
+                showsFragment!!.updateList(EXTRA_TOP_RATED)
             }
         }
 
         drawer_layout.closeDrawer(GravityCompat.START)
+        toolbar.title = item.title
         return true
     }
 
+    override fun onCategoryItemPicked(item: Pair<Int, String>) {
+        Log.i("SelectedCategory", item.toString())
+        if (moviesFragment != null) {
+            val params = ArrayList<Pair<Int,String>>()
+            params.add(item)
+            moviesFragment!!.search(params)
+        }
+    }
 
     inner class ViewPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
-
-
         override fun getItem(position: Int): Fragment {
             when (position) {
-                0 -> return MoviesFragment.newInstance(EXTRA_SELECTED)
-                else -> return ShowsFragment.newInstance(EXTRA_SELECTED)
+                0 -> return categoriesFragment!!
+                1 -> return moviesFragment!!
+                else -> return showsFragment!!
             }
         }
 
-        override fun getCount(): Int = 2
+        override fun getCount(): Int = 3
     }
 }

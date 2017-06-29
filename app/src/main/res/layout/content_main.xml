@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.proyectosyntax.codingchallenge.MoviesActivity">
+    tools:context="com.proyectosyntax.codingchallenge.MainActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -31,6 +31,12 @@
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/categoryTab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/categories" />
 
             <android.support.design.widget.TabItem
                 android:id="@+id/moviesTab"

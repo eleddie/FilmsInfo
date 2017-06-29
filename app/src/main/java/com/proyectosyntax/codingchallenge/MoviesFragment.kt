@@ -14,32 +14,50 @@ import com.android.volley.toolbox.Volley
 import com.cooltechworks.views.shimmer.ShimmerRecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.proyectosyntax.codingchallenge.Models.BaseFilm
 import org.json.JSONObject
 import com.proyectosyntax.codingchallenge.Models.Movie
 
 
-class MoviesFragment : Fragment(){
+class MoviesFragment : Fragment() {
 
     var mListAdapter: ListAdapter? = null
     var titlesList: ShimmerRecyclerView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        updateList(arguments.getString("extra"))
+    }
+
+    fun updateList(extra: String) {
+        mListAdapter?.setItems(ArrayList())
         val queue: RequestQueue = Volley.newRequestQueue(activity)
-        val url = "${activity.resources.getString(R.string.api_url)}movie/${arguments.getString("extra")}?api_key=${activity.resources.getString(R.string.api_key)}"
-        Log.i("URL", url)
-        val request = object : JsonObjectRequest(Request.Method.GET, url, null,
+        val url = "${activity.resources.getString(R.string.api_url)}movie/$extra?api_key=${activity.resources.getString(R.string.api_key)}"
+        val request = JsonObjectRequest(Request.Method.GET, url, null,
                 Response.Listener<JSONObject> { response -> connectionEstablished(response) },
-                Response.ErrorListener { error -> handleError(error) }) {
-            override fun getHeaders(): Map<String, String> {
-                val headers = HashMap<String, String>()
-                headers.put("Content-Type", "application/json")
-                return headers
-            }
-        }
+                Response.ErrorListener { error -> handleError(error) })
         queue.add(request)
     }
 
+    fun search(categories: List<Pair<Int, String>>) {
+
+        var parameters = "with_genres="
+        for (i in 0..categories.size - 1) {
+            parameters += categories[i].first.toString() + ","
+        }
+        parameters = parameters.substring(0, parameters.length - 1)
+        val url = "${activity.resources.getString(R.string.api_url)}discover/movie?api_key=${activity.resources.getString(R.string.api_key)}&$parameters"
+
+        Log.i("URL", url)
+        Log.i("Genres", categories.toString())
+
+        mListAdapter?.setItems(ArrayList())
+        val queue: RequestQueue = Volley.newRequestQueue(activity)
+        val request = JsonObjectRequest(Request.Method.GET, url, null,
+                Response.Listener<JSONObject> { response -> connectionEstablished(response) },
+                Response.ErrorListener { error -> handleError(error) })
+        queue.add(request)
+    }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater!!.inflate(R.layout.fragment_list, container, false)
@@ -47,6 +65,9 @@ class MoviesFragment : Fragment(){
         titlesList!!.showShimmerAdapter()
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.item_spacing)
         titlesList!!.addItemDecoration(SpacesItemDecoration(spacingInPixels))
+
+
+        mListAdapter = ListAdapter(activity, ArrayList<BaseFilm>())
 
 
         titlesList!!.addOnItemTouchListener(RecyclerViewListener(context, titlesList!!, object : RecyclerViewListener.ClickListener {
@@ -61,7 +82,6 @@ class MoviesFragment : Fragment(){
 
         }))
         titlesList!!.layoutManager = GridLayoutManager(activity, 2)
-        mListAdapter = ListAdapter(activity, ArrayList<Any>())
         titlesList!!.adapter = mListAdapter
         return rootView
     }
@@ -71,15 +91,15 @@ class MoviesFragment : Fragment(){
         Log.i("Results", results)
         if (results != null) {
             val gson = Gson()
-            val items: ArrayList<Any> = gson.fromJson(results, object : TypeToken<ArrayList<Movie>>() {}.type)
+            val items: ArrayList<BaseFilm> = gson.fromJson(results, object : TypeToken<ArrayList<Movie>>() {}.type)
             mListAdapter!!.setItems(items)
+            mListAdapter!!.notifyDataSetChanged()
         }
     }
 
     private fun handleError(error: VolleyError?) {
         Log.i("Error", error.toString())
     }
-
 
     companion object {
         fun newInstance(extra: String): MoviesFragment {

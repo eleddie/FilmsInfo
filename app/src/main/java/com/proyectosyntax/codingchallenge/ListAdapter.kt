@@ -9,13 +9,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import com.proyectosyntax.codingchallenge.Models.BaseFilm
 import com.proyectosyntax.codingchallenge.Models.Movie
 import com.proyectosyntax.codingchallenge.Models.Show
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import java.util.*
 
-class ListAdapter(var context: Context, private var items: ArrayList<Any>) : RecyclerView.Adapter<ListAdapter.MyHolder>() {
+class ListAdapter(var context: Context, private var items: ArrayList<BaseFilm>) : RecyclerView.Adapter<ListAdapter.MyHolder>() {
     private var inflater: LayoutInflater = LayoutInflater.from(context)
 
     override fun onBindViewHolder(holder: MyHolder?, position: Int) {
@@ -34,18 +35,17 @@ class ListAdapter(var context: Context, private var items: ArrayList<Any>) : Rec
         if (current is Movie) {
             holder!!.title.text = current.title
             holder.year.text = current.releaseDate
-            Picasso.with(context)
-                    .load("${context.resources.getString(R.string.image_url_500)}${current.posterPath}")
-                    .placeholder(R.drawable.poster_placeholder)
-                    .into(holder.imageId, imageCallback)
+
         } else if (current is Show) {
             holder!!.title.text = current.name
             holder.year.text = current.firstAirDate
-            Picasso.with(context)
-                    .load("${context.resources.getString(R.string.image_url_500)}${current.posterPath}")
-                    .placeholder(R.drawable.poster_placeholder)
-                    .into(holder.imageId, imageCallback)
+
         }
+
+        Picasso.with(context)
+                .load("${context.resources.getString(R.string.image_url_500)}${current.posterPath}")
+                .placeholder(R.drawable.poster_placeholder)
+                .into(holder!!.image, imageCallback)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): MyHolder {
@@ -60,17 +60,17 @@ class ListAdapter(var context: Context, private var items: ArrayList<Any>) : Rec
     }
 
     inner class MyHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var imageId: ImageView = itemView.findViewById(R.id.movieImage) as ImageView
+        var image: ImageView = itemView.findViewById(R.id.movieImage) as ImageView
         var title: TextView = itemView.findViewById(R.id.movieTitle) as TextView
         var year: TextView = itemView.findViewById(R.id.movieYear) as TextView
         var loadingImage: ProgressBar = itemView.findViewById(R.id.loadingImage) as ProgressBar
     }
 
-    fun setItems(items: ArrayList<Any>) {
+    fun setItems(items: ArrayList<BaseFilm>) {
         this.items = items
     }
 
-    fun getItem(position: Int): Any {
+    fun getItem(position: Int): BaseFilm {
         return items[position]
     }
 }

@@ -19,4 +19,10 @@
     <string name="image_url_780" translatable="false">https://image.tmdb.org/t/p/w780</string>
     <string name="filters">Filters</string>
 
+    <string name="all">All</string>
+    <string name="str_all_selected">All categories</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="categories">Categories</string>
+
 </resources>

@@ -4,10 +4,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="0dp"
     android:background="@drawable/bg_sharp_card"
-    android:orientation="vertical"
-
-
-    >
+    android:orientation="vertical">
 
     <View
         android:layout_width="match_parent"
@@ -15,7 +12,6 @@
         android:layout_gravity="center"
         android:layout_margin="16dp"
         android:background="@color/demo_dark_transparent" />
-
 
     <View
         android:layout_width="match_parent"
