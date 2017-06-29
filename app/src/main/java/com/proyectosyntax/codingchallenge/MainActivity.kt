@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     var moviesFragment: MoviesFragment? = null
     var categoriesFragment: CategoriesFragment? = null
     var showsFragment: ShowsFragment? = null
+    var selectedCategories = HashMap<Int, String>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -120,10 +121,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCategoryItemPicked(item: Pair<Int, String>) {
         Log.i("SelectedCategory", item.toString())
+        if (selectedCategories[item.first] == null) {
+            selectedCategories.put(item.first, item.second)
+        }else{
+            selectedCategories.remove(item.first)
+        }
         if (moviesFragment != null) {
-            val params = ArrayList<Pair<Int,String>>()
-            params.add(item)
-            moviesFragment!!.search(params)
+            moviesFragment!!.search(selectedCategories.toList())
         }
     }
 
