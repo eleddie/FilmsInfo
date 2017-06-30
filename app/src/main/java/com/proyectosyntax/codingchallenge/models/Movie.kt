@@ -4,13 +4,13 @@ import com.google.gson.annotations.SerializedName
 
 class Movie : BaseFilm() {
     @SerializedName("title")
-    var title: String? = null
+    lateinit var title: String
     @SerializedName("original_title")
-    var originalTitle: String? = null
+    lateinit var originalTitle: String
     @SerializedName("release_date")
-    var releaseDate: String? = null
+    lateinit var releaseDate: String
     @SerializedName("video")
-    var video: String? = null
+    lateinit var video: String
     @SerializedName("adult")
     var adult: Boolean = false
 }

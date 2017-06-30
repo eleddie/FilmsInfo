@@ -23,16 +23,6 @@ class ListAdapter(var context: Context, private var items: ArrayList<BaseFilm>) 
     override fun onBindViewHolder(holder: MyHolder?, position: Int) {
         val current = items[position]
 
-        val imageCallback = object : Callback {
-            override fun onSuccess() {
-                holder!!.loadingImage.visibility = View.GONE
-            }
-
-            override fun onError() {
-                Log.e("Error on loading image", "Error")
-            }
-        }
-
         if (current is Movie) {
             holder!!.title.text = current.title
             holder.year.text = current.releaseDate
@@ -46,7 +36,7 @@ class ListAdapter(var context: Context, private var items: ArrayList<BaseFilm>) 
         Picasso.with(context)
                 .load("${context.resources.getString(R.string.image_url_500)}${current.posterPath}")
                 .placeholder(R.drawable.poster_placeholder)
-                .into(holder!!.image, imageCallback)
+                .into(holder!!.image)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): MyHolder {
@@ -64,7 +54,6 @@ class ListAdapter(var context: Context, private var items: ArrayList<BaseFilm>) 
         var image: ImageView = itemView.findViewById(R.id.movieImage) as ImageView
         var title: TextView = itemView.findViewById(R.id.movieTitle) as TextView
         var year: TextView = itemView.findViewById(R.id.movieYear) as TextView
-        var loadingImage: ProgressBar = itemView.findViewById(R.id.loadingImage) as ProgressBar
     }
 
     fun setItems(items: ArrayList<BaseFilm>) {

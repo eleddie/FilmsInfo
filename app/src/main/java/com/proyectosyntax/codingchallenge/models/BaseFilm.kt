@@ -11,17 +11,17 @@ open class BaseFilm : Serializable {
     @SerializedName("vote_count")
     var voteCount: Int = 0
     @SerializedName("vote_average")
-    var voteAverage: Float = 0.toFloat()
+    var voteAverage: Float = 0f
     @SerializedName("popularity")
-    var popularity: Float = 0.toFloat()
+    var popularity: Float = 0f
     @SerializedName("poster_path")
-    var posterPath: String? = null
+    lateinit var posterPath: String
     @SerializedName("original_language")
-    var originalLanguage: String? = null
+    lateinit var originalLanguage: String
     @SerializedName("genre_ids")
-    var genreIds: IntArray? = null
+    lateinit var genreIds: IntArray
     @SerializedName("backdrop_path")
-    var backdropPath: String? = null
+    lateinit var backdropPath: String
     @SerializedName("overview")
-    var overview: String? = null
+    lateinit var overview: String
 }

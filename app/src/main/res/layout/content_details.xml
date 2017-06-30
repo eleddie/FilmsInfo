@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#212121"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.proyectosyntax.codingchallenge.DetailsActivity"
+    tools:context="com.proyectosyntax.codingchallenge.activities.DetailsActivity"
     tools:showIn="@layout/activity_details">
 
     <LinearLayout
@@ -48,6 +48,7 @@
                     style="?android:attr/ratingBarStyleSmall"
                     android:layout_width="80dp"
                     android:layout_height="16dp"
+                    android:layout_marginBottom="8dp"
                     android:layout_marginTop="8dp"
                     android:clickable="false"
                     android:focusable="false"
@@ -57,14 +58,32 @@
                     android:progress="5" />
 
                 <TextView
-                    android:id="@+id/yearGenre"
+                    android:id="@+id/year"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="2017 · Action"
+                    android:text="2017"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/genres"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Action | Comedy"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="14sp" />
             </LinearLayout>
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/overviewTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/overview"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/overview"
@@ -73,6 +92,6 @@
             android:paddingTop="16dp"
             android:text="Overview of the movie"
             android:textColor="@android:color/white"
-            android:textSize="16sp" />
+            android:textSize="16dp" />
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

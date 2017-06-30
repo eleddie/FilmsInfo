@@ -29,9 +29,6 @@ class CategoriesFragment : Fragment() {
         val rootView = inflater!!.inflate(R.layout.categories_list, container, false)
         categoriesList = rootView.findViewById(R.id.categoriesList) as RecyclerView
 
-        val spacingInPixels = resources.getDimensionPixelSize(R.dimen.item_spacing)
-        categoriesList!!.addItemDecoration(SpacesItemDecoration(spacingInPixels))
-
         categoriesList!!.addOnItemTouchListener(RecyclerViewListener(context, categoriesList!!, object : RecyclerViewListener.ClickListener {
             override fun onClick(view: View, position: Int) {
                 if (mListAdapter!!.selectedItems.get(position, false)) {

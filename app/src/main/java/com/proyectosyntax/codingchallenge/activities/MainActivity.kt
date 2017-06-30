@@ -21,6 +21,7 @@ import com.proyectosyntax.codingchallenge.R
 import com.proyectosyntax.codingchallenge.fragments.ShowsFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import android.content.Intent
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, CategoriesFragment.OnCategoryItemSelectedListener {
@@ -64,6 +65,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(container))
 
         tabs.getTabAt(1)?.select()
+
+        val intent = intent
+        if (Intent.ACTION_SEARCH == intent.action) {
+            val query = intent.getStringExtra(SearchManager.QUERY)
+            Log.i("Search query", query)
+        }
     }
 
 
@@ -83,14 +90,36 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val searchView: SearchView = menu.findItem(R.id.action_search).actionView as SearchView
         searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
 
+        val queryTextListener = object : SearchView.OnQueryTextListener {
+            override fun onQueryTextChange(newText: String): Boolean {
+                // this is your adapter that will be filtered
+                Log.i("Search query change", newText)
+                if (newText.isNotBlank()) {
+                    moviesFragment.search(newText)
+                    showsFragment.search(newText)
+                }
+                return true
+            }
+
+            override fun onQueryTextSubmit(query: String): Boolean {
+                //Here u can get the value "query" which is entered in the search box.
+                Log.i("Search query submit", query)
+                return true
+            }
+        }
+        searchView.setOnQueryTextListener(queryTextListener)
+
         return true
     }
 
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            else -> return super.onOptionsItemSelected(item)
+        when(item.itemId){
+            android.R.id.home -> {
+                moviesFragment.updateList(EXTRA_POPULAR)
+                showsFragment.updateList(EXTRA_POPULAR)
+            }
         }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -118,7 +147,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         drawer_layout.closeDrawer(GravityCompat.START)
-        toolbar.title = item.title
         return true
     }
 
@@ -130,13 +158,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             selectedCategories.remove(item.first)
         }
         if (selectedCategories.size > 0) {
-            moviesFragment.search(selectedCategories.toList())
-            showsFragment.search(selectedCategories.toList())
-        }else{
+            moviesFragment.filterCategories(selectedCategories.toList())
+            showsFragment.filterCategories(selectedCategories.toList())
+        } else {
             moviesFragment.updateList(EXTRA_POPULAR)
             showsFragment.updateList(EXTRA_POPULAR)
         }
     }
+
 
     inner class ViewPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
         override fun getItem(position: Int): Fragment {

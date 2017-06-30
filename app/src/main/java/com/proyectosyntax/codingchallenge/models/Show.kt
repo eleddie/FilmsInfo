@@ -4,11 +4,11 @@ import com.google.gson.annotations.SerializedName
 
 class Show : BaseFilm() {
     @SerializedName("origin_country")
-    var originCountry: Array<String>? = null
+    lateinit var originCountry: Array<String>
     @SerializedName("original_name")
-    var originalName: String? = null
+    lateinit var originalName: String
     @SerializedName("name")
-    var name: String? = null
+    lateinit var name: String
     @SerializedName("first_air_date")
-    var firstAirDate: String? = null
+    lateinit var firstAirDate: String
 }

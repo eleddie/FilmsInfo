@@ -25,6 +25,7 @@ import com.proyectosyntax.codingchallenge.utils.RecyclerViewListener
 import com.proyectosyntax.codingchallenge.utils.SpacesItemDecoration
 import org.json.JSONObject
 import com.proyectosyntax.codingchallenge.R
+import java.net.URLEncoder
 
 
 class ShowsFragment : Fragment() {
@@ -41,8 +42,7 @@ class ShowsFragment : Fragment() {
         val rootView = inflater!!.inflate(R.layout.fragment_list, container, false)
         titlesList = rootView.findViewById(R.id.titlesList) as ShimmerRecyclerView
         titlesList.showShimmerAdapter()
-        val spacingInPixels = resources.getDimensionPixelSize(R.dimen.item_spacing)
-        titlesList.addItemDecoration(SpacesItemDecoration(spacingInPixels))
+        titlesList.addItemDecoration(SpacesItemDecoration())
 
         titlesList.addOnItemTouchListener(RecyclerViewListener(context, titlesList, object : RecyclerViewListener.ClickListener {
             override fun onClick(view: View, position: Int) {
@@ -77,16 +77,30 @@ class ShowsFragment : Fragment() {
         queue.add(request)
     }
 
-    fun search(categories: List<Pair<Int, String>>) {
+    fun search(keyword: String = "") {
+        val parameters = "query=${URLEncoder.encode(keyword, "utf-8")}"
+        val url = "${activity.resources.getString(R.string.api_url)}search/tv?api_key=${activity.resources.getString(R.string.api_key)}&$parameters"
+
+        Log.i("URL", url)
+
+        mListAdapter.setItems(ArrayList())
+        val queue: RequestQueue = Volley.newRequestQueue(activity)
+        val request = JsonObjectRequest(Request.Method.GET, url, null,
+                Response.Listener<JSONObject> { response -> connectionEstablished(response) },
+                Response.ErrorListener { error -> handleError(error) })
+        queue.add(request)
+    }
+
+    fun filterCategories(categories: List<Pair<Int, String>>) {
         var parameters = "with_genres="
         for (i in 0..categories.size - 1) {
             parameters += categories[i].first.toString() + ","
         }
         parameters = parameters.substring(0, parameters.length - 1)
+
         val url = "${activity.resources.getString(R.string.api_url)}discover/tv?api_key=${activity.resources.getString(R.string.api_key)}&$parameters"
 
         Log.i("URL", url)
-        Log.i("Genres", categories.toString())
 
         mListAdapter.setItems(ArrayList())
         val queue: RequestQueue = Volley.newRequestQueue(activity)
