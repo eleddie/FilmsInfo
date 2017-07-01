@@ -38,20 +38,17 @@ class SplashScreen : AwesomeSplash() {
             doneLoading = true
         }
 
-        //Customize Circular Reveal
         configSplash.backgroundColor = R.color.colorPrimary
         configSplash.animCircularRevealDuration = 1000
         configSplash.revealFlagX = Flags.REVEAL_RIGHT
         configSplash.revealFlagY = Flags.REVEAL_BOTTOM
 
-        //Customize Logo
         configSplash.logoSplash = R.mipmap.ic_launcher
         configSplash.animLogoSplashDuration = 1000
         configSplash.animLogoSplashTechnique = Techniques.FadeIn
 
-        configSplash.titleSplash = "grability"
-
-
+        configSplash.titleSplash = "Eduardo Sánchez G"
+        configSplash.titleTextSize = 20f
     }
 
     override fun animationsFinished() {

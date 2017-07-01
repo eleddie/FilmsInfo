@@ -13,5 +13,8 @@
     <color name="divider">#BDBDBD</color>
 
     <color name="black_overlay">#66000000</color>
+    <color name="linkedin">#0877b5</color>
+    <color name="phone">#009486</color>
+    <color name="mail">#e75a4d</color>
 
 </resources>

@@ -22,8 +22,14 @@
     <string name="all">All</string>
     <string name="str_all_selected">All categories</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="categories">Categories</string>
     <string name="overview">Overview</string>
+    <string name="about_me">About Me</string>
+    <string name="android">Android designer and developer</string>
+    <string name="about_me_text">I’m Eduardo, a software developer specialized in mobile development. I\'m passionate about the mobile market, and have good knowledge about it.
+        I feel comfortable working with a good team of developers. My main purpose when developing any software is to successfully achieve the needs of the client.
+        I believe that every moment that I live, doesn\'t matter if it\'s good or bad, always gives me something to learn from.
+    </string>
+    <string name="hire_you">We want to hire you!!</string>
 
 </resources>

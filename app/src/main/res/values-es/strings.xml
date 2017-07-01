@@ -12,4 +12,12 @@
     <string name="str_all_selected">Todas las categorieas</string>
     <string name="categories">Categorias</string>
     <string name="overview">Sinopsis</string>
+    <string name="about_me">Sobre Mi</string>
+    <string name="android">Desarrollador y diseñador android</string>
+    <string name="about_me_text">Soy Eduardo, un desarrollador de software especializado en desarrollo móvil. Soy un apasionado del mercado móvil, y tengo buen conocimiento al respecto.
+         Me siento cómodo trabajando con un buen equipo de desarrolladores. Mi propósito principal al desarrollar cualquier software es alcanzar con éxito las necesidades del cliente.
+         Creo que cada momento que vivo, no importa si es bueno o malo, siempre me da algo de lo que aprender.
+    </string>
+    <string name="hire_you">Queremos contratarte!!</string>
+
 </resources>

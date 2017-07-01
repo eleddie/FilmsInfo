@@ -26,7 +26,6 @@ class DetailsActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.title = ""
 
-
         val preferences = getSharedPreferences(packageName, Context.MODE_PRIVATE)
         val categoriesSaved = preferences.getString("categories", null)
         categoriesMap = ObjectSerializer.deserialize(categoriesSaved) as HashMap<Int, String>

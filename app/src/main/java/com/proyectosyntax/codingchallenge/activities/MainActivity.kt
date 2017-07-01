@@ -13,6 +13,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.app.SearchManager
 import android.content.Context
+import android.content.Intent
 import android.support.v7.widget.SearchView
 import android.util.Log
 import com.proyectosyntax.codingchallenge.fragments.CategoriesFragment
@@ -21,13 +22,10 @@ import com.proyectosyntax.codingchallenge.R
 import com.proyectosyntax.codingchallenge.fragments.ShowsFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-import android.content.Intent
 import com.proyectosyntax.codingchallenge.utils.CurrentState
 import com.proyectosyntax.codingchallenge.utils.ObjectSerializer
 import android.support.v4.view.MenuItemCompat
-
-
-
+import android.view.View
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, CategoriesFragment.OnCategoryItemSelectedListener {
 
@@ -63,7 +61,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navigationView.setNavigationItemSelectedListener(this)
         navigationView.menu.getItem(0).setChecked(true)
 
-        toolbar.title = navigationView.menu.getItem(0).title
         val mSectionsPagerAdapter = ViewPagerAdapter(supportFragmentManager)
 
         container.adapter = mSectionsPagerAdapter
@@ -71,7 +68,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(container))
 
         tabs.getTabAt(1)?.select()
-
+        toolbar.title = "Films"
     }
 
     override fun onBackPressed() {
@@ -188,6 +185,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             moviesFragment.updateType(CurrentState.TYPE_POPULAR, CurrentState.Movie.page)
             showsFragment.updateType(CurrentState.TYPE_POPULAR, CurrentState.Show.page)
         }
+    }
+
+    fun openAboutMe(view: View) {
+        startActivity(Intent(this, AboutActivity::class.java))
     }
 
     inner class ViewPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
