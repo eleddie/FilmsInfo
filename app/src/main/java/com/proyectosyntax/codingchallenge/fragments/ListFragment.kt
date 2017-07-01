@@ -12,6 +12,7 @@ import com.cooltechworks.views.shimmer.ShimmerRecyclerView
 import com.proyectosyntax.codingchallenge.R
 import com.proyectosyntax.codingchallenge.activities.DetailsActivity
 import com.proyectosyntax.codingchallenge.adapters.ListAdapter
+import com.proyectosyntax.codingchallenge.models.BaseFilm
 import com.proyectosyntax.codingchallenge.models.Movie
 import com.proyectosyntax.codingchallenge.utils.*
 import org.json.JSONObject
@@ -51,6 +52,6 @@ abstract class ListFragment : Fragment() {
     abstract fun updateType(type: String, page: Int)
     abstract fun updateSearch(query: String, page: Int)
     abstract fun updateCategories(categories: List<Pair<Int, String>>, page: Int)
-    abstract fun responseListener(response: JSONObject?)
+    abstract fun responseListener(response: JSONObject?): ArrayList<BaseFilm?>
     abstract fun handleError(error: VolleyError?)
 }

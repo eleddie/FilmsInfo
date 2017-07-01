@@ -80,7 +80,7 @@ class ShowsFragment : ListFragment() {
         Requests.filterShowsByCategories(parentActivity, categories, listener, errorListener, page)
     }
 
-    override fun responseListener(response: JSONObject?) {
+    override fun responseListener(response: JSONObject?):ArrayList<BaseFilm?> {
         val results = response?.getString("results")
         if (results != null) {
             val gson = Gson()
@@ -92,6 +92,7 @@ class ShowsFragment : ListFragment() {
                 mListAdapter.addItems(items)
             }
         }
+        return mListAdapter.getItems()
     }
 
     override fun handleError(error: VolleyError?) {

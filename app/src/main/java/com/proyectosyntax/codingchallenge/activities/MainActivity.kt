@@ -24,6 +24,9 @@ import kotlinx.android.synthetic.main.content_main.*
 import android.content.Intent
 import com.proyectosyntax.codingchallenge.utils.CurrentState
 import com.proyectosyntax.codingchallenge.utils.ObjectSerializer
+import android.support.v4.view.MenuItemCompat
+
+
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, CategoriesFragment.OnCategoryItemSelectedListener {
@@ -32,11 +35,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var categoriesFragment: CategoriesFragment
     lateinit var showsFragment: ShowsFragment
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+        supportActionBar?.setHomeButtonEnabled(true)
 
         val categories: HashMap<Int, String>
         if (intent.extras != null)
@@ -71,7 +74,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
-
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
             drawer_layout.closeDrawer(GravityCompat.START)
@@ -90,30 +92,47 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val queryTextListener = object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
-                // this is your adapter that will be filtered
                 Log.i("Search query change", newText)
                 return true
             }
 
             override fun onQueryTextSubmit(query: String): Boolean {
-                //Here u can get the value "query" which is entered in the search box.
                 Log.i("Search query submit", query)
                 if (query.isNotBlank()) {
-//                    moviesFragment.search(newText)
+                    CurrentState.categories.clear()
                     CurrentState.Movie.page = 1
                     CurrentState.Show.page = 1
                     CurrentState.search = query
                     moviesFragment.updateSearch(query, CurrentState.Movie.page)
                     showsFragment.updateSearch(query, CurrentState.Show.page)
+                    searchView.clearFocus()
                 }
                 return true
             }
         }
+
         searchView.setOnQueryTextListener(queryTextListener)
+
+        MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.action_search), object : MenuItemCompat.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+                Log.i("menuItemActionExpand", "Called")
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                Log.i("menuItemActionCollapse", "Called")
+                CurrentState.search = null
+                CurrentState.Movie.page = 1
+                CurrentState.Show.page = 1
+                moviesFragment.updateType(CurrentState.TYPE_POPULAR, CurrentState.Movie.page)
+                showsFragment.updateType(CurrentState.TYPE_POPULAR, CurrentState.Show.page)
+                return true
+            }
+        })
+
 
         return true
     }
-
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         CurrentState.search = null
@@ -170,7 +189,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             showsFragment.updateType(CurrentState.TYPE_POPULAR, CurrentState.Show.page)
         }
     }
-
 
     inner class ViewPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
         override fun getItem(position: Int): Fragment {

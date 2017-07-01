@@ -15,6 +15,7 @@ import com.proyectosyntax.codingchallenge.models.Show
 import com.proyectosyntax.codingchallenge.R
 import com.squareup.picasso.Picasso
 import java.util.*
+import kotlin.collections.ArrayList
 
 class ListAdapter(var context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var inflater: LayoutInflater = LayoutInflater.from(context)
@@ -97,6 +98,10 @@ class ListAdapter(var context: Context) : RecyclerView.Adapter<RecyclerView.View
         items.addAll(itemsToAdd)
         items.add(null)
         notifyDataSetChanged()
+    }
+
+    fun getItems() :ArrayList<BaseFilm?>{
+        return items
     }
 
 }
