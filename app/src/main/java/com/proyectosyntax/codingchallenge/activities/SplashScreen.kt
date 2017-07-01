@@ -49,7 +49,7 @@ class SplashScreen : AwesomeSplash() {
         configSplash.animLogoSplashDuration = 1000
         configSplash.animLogoSplashTechnique = Techniques.FadeIn
 
-        configSplash.titleSplash = "Grability"
+        configSplash.titleSplash = "grability"
 
 
     }

@@ -22,18 +22,15 @@ import com.proyectosyntax.codingchallenge.fragments.ShowsFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import android.content.Intent
+import com.proyectosyntax.codingchallenge.utils.CurrentState
+import com.proyectosyntax.codingchallenge.utils.ObjectSerializer
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, CategoriesFragment.OnCategoryItemSelectedListener {
 
-    val EXTRA_POPULAR = "popular"
-    val EXTRA_TOP_RATED = "top_rated"
-    val EXTRA_UPCOMING = "upcoming"
-
     lateinit var moviesFragment: MoviesFragment
     lateinit var categoriesFragment: CategoriesFragment
     lateinit var showsFragment: ShowsFragment
-    var selectedCategories = HashMap<Int, String>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,12 +38,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        val categories: HashMap<Int, String> = intent.extras.get("categories") as HashMap<Int, String>
-
+        val categories: HashMap<Int, String>
+        if (intent.extras != null)
+            categories = intent.extras.get("categories") as HashMap<Int, String>
+        else {
+            val preferences = getSharedPreferences(packageName, Context.MODE_PRIVATE)
+            val categoriesSaved = preferences.getString("categories", null)
+            categories = ObjectSerializer.deserialize(categoriesSaved) as HashMap<Int, String>
+        }
         Log.i("Categories", categories.toString())
 
-        moviesFragment = MoviesFragment.newInstance(EXTRA_POPULAR)
-        showsFragment = ShowsFragment.newInstance(this, EXTRA_POPULAR)
+        moviesFragment = MoviesFragment.newInstance()
+        showsFragment = ShowsFragment.newInstance(this, CurrentState.TYPE_POPULAR)
         categoriesFragment = CategoriesFragment.newInstance(categories)
 
 
@@ -66,11 +69,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         tabs.getTabAt(1)?.select()
 
-        val intent = intent
-        if (Intent.ACTION_SEARCH == intent.action) {
-            val query = intent.getStringExtra(SearchManager.QUERY)
-            Log.i("Search query", query)
-        }
     }
 
 
@@ -94,16 +92,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             override fun onQueryTextChange(newText: String): Boolean {
                 // this is your adapter that will be filtered
                 Log.i("Search query change", newText)
-                if (newText.isNotBlank()) {
-                    moviesFragment.search(newText)
-                    showsFragment.search(newText)
-                }
                 return true
             }
 
             override fun onQueryTextSubmit(query: String): Boolean {
                 //Here u can get the value "query" which is entered in the search box.
                 Log.i("Search query submit", query)
+                if (query.isNotBlank()) {
+//                    moviesFragment.search(newText)
+                    CurrentState.Movie.page = 1
+                    CurrentState.search = query
+                    moviesFragment.updateSearch(query, CurrentState.Movie.page)
+                    showsFragment.search(query)
+                }
                 return true
             }
         }
@@ -112,37 +113,32 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            android.R.id.home -> {
-                moviesFragment.updateList(EXTRA_POPULAR)
-                showsFragment.updateList(EXTRA_POPULAR)
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        CurrentState.search = null
         when (item.itemId) {
             R.id.nav_popular_movies -> {
                 tabs.getTabAt(1)?.select()
-                moviesFragment.updateList(EXTRA_POPULAR)
+                CurrentState.Movie.page = 1
+                moviesFragment.updateType(CurrentState.TYPE_POPULAR, CurrentState.Movie.page)
             }
             R.id.nav_top_rated_movies -> {
                 tabs.getTabAt(1)?.select()
-                moviesFragment.updateList(EXTRA_TOP_RATED)
+                CurrentState.Movie.page = 1
+                moviesFragment.updateType(CurrentState.TYPE_TOP_RATED, CurrentState.Movie.page)
             }
             R.id.nav_upcoming_movies -> {
                 tabs.getTabAt(1)?.select()
-                moviesFragment.updateList(EXTRA_UPCOMING)
+                CurrentState.Movie.page = 1
+                moviesFragment.updateType(CurrentState.TYPE_UPCOMING, CurrentState.Movie.page)
             }
             R.id.nav_popular_shows -> {
                 tabs.getTabAt(2)?.select()
-                showsFragment.updateList(EXTRA_POPULAR)
+                showsFragment.updateList(CurrentState.TYPE_POPULAR)
             }
             R.id.nav_top_rated_shows -> {
                 tabs.getTabAt(2)?.select()
-                showsFragment.updateList(EXTRA_TOP_RATED)
+                showsFragment.updateList(CurrentState.TYPE_TOP_RATED)
             }
         }
 
@@ -152,17 +148,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCategoryItemPicked(item: Pair<Int, String>) {
         Log.i("SelectedCategory", item.toString())
-        if (selectedCategories[item.first] == null) {
-            selectedCategories.put(item.first, item.second)
+        CurrentState.search = null
+        if (CurrentState.categories[item.first] == null) {
+            CurrentState.categories.put(item.first, item.second)
         } else {
-            selectedCategories.remove(item.first)
+            CurrentState.categories.remove(item.first)
         }
-        if (selectedCategories.size > 0) {
-            moviesFragment.filterCategories(selectedCategories.toList())
-            showsFragment.filterCategories(selectedCategories.toList())
+
+        if (CurrentState.categories.size > 0) {
+            CurrentState.Movie.page = 1
+            moviesFragment.updateCategories(CurrentState.categories.toList(), CurrentState.Movie.page)
+//            moviesFragment.filterCategories(selectedCategories.toList())
+            showsFragment.filterCategories(CurrentState.categories.toList())
         } else {
-            moviesFragment.updateList(EXTRA_POPULAR)
-            showsFragment.updateList(EXTRA_POPULAR)
+            CurrentState.Movie.page = 1
+            moviesFragment.updateType(CurrentState.TYPE_POPULAR, CurrentState.Movie.page)
+            showsFragment.updateList(CurrentState.TYPE_POPULAR)
         }
     }
 

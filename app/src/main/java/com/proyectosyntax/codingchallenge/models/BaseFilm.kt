@@ -15,13 +15,13 @@ open class BaseFilm : Serializable {
     @SerializedName("popularity")
     var popularity: Float = 0f
     @SerializedName("poster_path")
-    lateinit var posterPath: String
+    var posterPath: String = ""
     @SerializedName("original_language")
     lateinit var originalLanguage: String
     @SerializedName("genre_ids")
     lateinit var genreIds: IntArray
     @SerializedName("backdrop_path")
-    lateinit var backdropPath: String
+    var backdropPath: String = ""
     @SerializedName("overview")
     lateinit var overview: String
 }

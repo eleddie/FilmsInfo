@@ -1,5 +1,6 @@
 package com.proyectosyntax.codingchallenge.fragments
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -9,8 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.android.volley.*
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
 import com.cooltechworks.views.shimmer.ShimmerRecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -20,21 +19,23 @@ import com.proyectosyntax.codingchallenge.models.BaseFilm
 import org.json.JSONObject
 import com.proyectosyntax.codingchallenge.models.Movie
 import com.proyectosyntax.codingchallenge.R
-import com.proyectosyntax.codingchallenge.utils.ObjectSerializer
-import com.proyectosyntax.codingchallenge.utils.RecyclerViewListener
-import com.proyectosyntax.codingchallenge.utils.SpacesItemDecoration
-import java.net.URLEncoder
+import com.proyectosyntax.codingchallenge.utils.*
 
 
 class MoviesFragment : Fragment() {
 
     lateinit var mListAdapter: ListAdapter
     lateinit var titlesList: ShimmerRecyclerView
+    lateinit var parentActivity: Activity
+
+    val listener = Response.Listener<JSONObject> { response -> responseListener(response) }
+    val errorListener = Response.ErrorListener { error -> handleError(error) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mListAdapter = ListAdapter(activity, ArrayList<BaseFilm>())
-        updateList(arguments.getString("extra"))
+        parentActivity = activity
+        mListAdapter = ListAdapter(parentActivity)
+        updateType(CurrentState.Movie.type, CurrentState.Movie.page)
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -42,9 +43,33 @@ class MoviesFragment : Fragment() {
         titlesList = rootView.findViewById(R.id.titlesList) as ShimmerRecyclerView
         titlesList.showShimmerAdapter()
         titlesList.addItemDecoration(SpacesItemDecoration())
+        val layoutManager = GridLayoutManager(parentActivity, 2)
+        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                when (mListAdapter.getItemViewType(position)) {
+                    ListAdapter.VIEW_TYPE_ITEM -> return 1
+                    else -> return 2
+                }
+            }
+        }
 
+        titlesList.layoutManager = layoutManager
+        titlesList.addOnScrollListener(RecyclerViewLoadMoreListener(layoutManager, object : RecyclerViewLoadMoreListener.ScrollListener {
+            override fun onLoadMore() {
+                if (!mListAdapter.isLoading) {
+                    mListAdapter.isLoading = true
+                    CurrentState.Movie.page++
+                    if (CurrentState.search != null)
+                        updateSearch(CurrentState.search!!, CurrentState.Movie.page)
+                    else if (!CurrentState.categories.isEmpty())
+                        updateCategories(CurrentState.categories.toList(), CurrentState.Movie.page)
+                    else
+                        updateType(CurrentState.Movie.type, CurrentState.Movie.page)
+                }
+            }
+        }))
 
-        titlesList.addOnItemTouchListener(RecyclerViewListener(context, titlesList, object : RecyclerViewListener.ClickListener {
+        titlesList.addOnItemTouchListener(RecyclerViewListener(context, object : RecyclerViewListener.ClickListener {
             override fun onClick(view: View, position: Int) {
                 val tappedItem = mListAdapter.getItem(position)
                 val intent: Intent = Intent(context, DetailsActivity::class.java)
@@ -55,62 +80,49 @@ class MoviesFragment : Fragment() {
 
 
         }))
-        titlesList.layoutManager = GridLayoutManager(activity, 2)
+
         titlesList.adapter = mListAdapter
         return rootView
     }
 
-    fun updateList(extra: String) {
-        mListAdapter.setItems(ArrayList())
-        val queue: RequestQueue = Volley.newRequestQueue(activity)
-        val url = "${activity.resources.getString(R.string.api_url)}movie/$extra?api_key=${activity.resources.getString(R.string.api_key)}"
-        val request = JsonObjectRequest(Request.Method.GET, url, null,
-                Response.Listener<JSONObject> { response -> connectionEstablished(response) },
-                Response.ErrorListener { error -> handleError(error) })
-        queue.add(request)
-    }
 
-    fun search(keyword: String = "") {
-        val parameters = "query=${URLEncoder.encode(keyword, "utf-8")}"
-        val url = "${activity.resources.getString(R.string.api_url)}search/movie?api_key=${activity.resources.getString(R.string.api_key)}&$parameters"
-
-        Log.i("URL", url)
-
-        mListAdapter.setItems(ArrayList())
-        val queue: RequestQueue = Volley.newRequestQueue(activity)
-        val request = JsonObjectRequest(Request.Method.GET, url, null,
-                Response.Listener<JSONObject> { response -> connectionEstablished(response) },
-                Response.ErrorListener { error -> handleError(error) })
-        queue.add(request)
-    }
-
-    fun filterCategories(categories: List<Pair<Int, String>>) {
-        var parameters = "with_genres="
-        for (i in 0..categories.size - 1) {
-            parameters += categories[i].first.toString() + ","
+    fun updateType(type: String, page: Int) {
+        CurrentState.Movie.page = page
+        CurrentState.Movie.type = type
+        when (type) {
+            CurrentState.TYPE_POPULAR -> {
+                Requests.getPopularMovies(parentActivity, listener, errorListener, page)
+            }
+            CurrentState.TYPE_TOP_RATED -> {
+                Requests.getTopRatedMovies(parentActivity, listener, errorListener, page)
+            }
+            CurrentState.TYPE_UPCOMING -> {
+                Requests.getUpcomingMovies(parentActivity, listener, errorListener, page)
+            }
         }
-        parameters = parameters.substring(0, parameters.length - 1)
-
-        val url = "${activity.resources.getString(R.string.api_url)}discover/movie?api_key=${activity.resources.getString(R.string.api_key)}&$parameters"
-
-        Log.i("URL", url)
-
-        mListAdapter.setItems(ArrayList())
-        val queue: RequestQueue = Volley.newRequestQueue(activity)
-        val request = JsonObjectRequest(Request.Method.GET, url, null,
-                Response.Listener<JSONObject> { response -> connectionEstablished(response) },
-                Response.ErrorListener { error -> handleError(error) })
-        queue.add(request)
     }
 
-    private fun connectionEstablished(response: JSONObject?) {
+    fun updateSearch(query: String, page: Int) {
+        if (CurrentState.Movie.page == 1)
+            mListAdapter.setItems(ArrayList())
+        Requests.searchMovies(parentActivity, query, listener, errorListener, page)
+    }
+
+    fun updateCategories(categories: List<Pair<Int, String>>, page: Int = 1) {
+        Requests.filterMoviesByCategories(parentActivity, categories, listener, errorListener, page)
+    }
+
+    fun responseListener(response: JSONObject?) {
         val results = response?.getString("results")
-        Log.i("Results movie", results)
         if (results != null) {
             val gson = Gson()
-            val items: ArrayList<BaseFilm> = gson.fromJson(results, object : TypeToken<ArrayList<Movie>>() {}.type)
-            mListAdapter.setItems(items)
-            mListAdapter.notifyDataSetChanged()
+            val items: ArrayList<BaseFilm?> = gson.fromJson(results, object : TypeToken<ArrayList<Movie>>() {}.type)
+            if (CurrentState.Movie.page == 1) {
+                mListAdapter.setItems(items)
+            } else {
+                mListAdapter.isLoading = false
+                mListAdapter.addItems(items)
+            }
         }
     }
 
@@ -119,12 +131,9 @@ class MoviesFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(extra: String): MoviesFragment {
-            val fragment = MoviesFragment()
-            val args = Bundle()
-            args.putString("extra", extra)
-            fragment.arguments = args
-            return fragment
+        fun newInstance(): MoviesFragment {
+            return MoviesFragment()
         }
     }
+
 }

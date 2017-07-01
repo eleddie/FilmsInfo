@@ -1,6 +1,7 @@
 package com.proyectosyntax.codingchallenge.fragments
 
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -31,10 +32,12 @@ import java.net.URLEncoder
 class ShowsFragment : Fragment() {
     lateinit var mListAdapter: ListAdapter
     lateinit var titlesList: ShimmerRecyclerView
+    lateinit var parentActivity: Activity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mListAdapter = ListAdapter(activity, ArrayList<BaseFilm>())
+        parentActivity = activity
+        mListAdapter = ListAdapter(parentActivity)
         updateList(arguments.getString("extra"))
     }
 
@@ -44,7 +47,7 @@ class ShowsFragment : Fragment() {
         titlesList.showShimmerAdapter()
         titlesList.addItemDecoration(SpacesItemDecoration())
 
-        titlesList.addOnItemTouchListener(RecyclerViewListener(context, titlesList, object : RecyclerViewListener.ClickListener {
+        titlesList.addOnItemTouchListener(RecyclerViewListener(context, object : RecyclerViewListener.ClickListener {
             override fun onClick(view: View, position: Int) {
                 val tappedItem = mListAdapter.getItem(position)
                 val intent: Intent = Intent(context, DetailsActivity::class.java)
@@ -55,7 +58,7 @@ class ShowsFragment : Fragment() {
 
 
         }))
-        titlesList.layoutManager = GridLayoutManager(activity, 2)
+        titlesList.layoutManager = GridLayoutManager(parentActivity, 2)
 
         titlesList.adapter = mListAdapter
         return rootView
@@ -79,12 +82,12 @@ class ShowsFragment : Fragment() {
 
     fun search(keyword: String = "") {
         val parameters = "query=${URLEncoder.encode(keyword, "utf-8")}"
-        val url = "${activity.resources.getString(R.string.api_url)}search/tv?api_key=${activity.resources.getString(R.string.api_key)}&$parameters"
+        val url = "${parentActivity.resources.getString(R.string.api_url)}search/tv?api_key=${parentActivity.resources.getString(R.string.api_key)}&$parameters"
 
         Log.i("URL", url)
 
         mListAdapter.setItems(ArrayList())
-        val queue: RequestQueue = Volley.newRequestQueue(activity)
+        val queue: RequestQueue = Volley.newRequestQueue(parentActivity)
         val request = JsonObjectRequest(Request.Method.GET, url, null,
                 Response.Listener<JSONObject> { response -> connectionEstablished(response) },
                 Response.ErrorListener { error -> handleError(error) })
@@ -98,12 +101,12 @@ class ShowsFragment : Fragment() {
         }
         parameters = parameters.substring(0, parameters.length - 1)
 
-        val url = "${activity.resources.getString(R.string.api_url)}discover/tv?api_key=${activity.resources.getString(R.string.api_key)}&$parameters"
+        val url = "${parentActivity.resources.getString(R.string.api_url)}discover/tv?api_key=${parentActivity.resources.getString(R.string.api_key)}&$parameters"
 
         Log.i("URL", url)
 
         mListAdapter.setItems(ArrayList())
-        val queue: RequestQueue = Volley.newRequestQueue(activity)
+        val queue: RequestQueue = Volley.newRequestQueue(parentActivity)
         val request = JsonObjectRequest(Request.Method.GET, url, null,
                 Response.Listener<JSONObject> { response -> connectionEstablished(response) },
                 Response.ErrorListener { error -> handleError(error) })
@@ -115,10 +118,9 @@ class ShowsFragment : Fragment() {
         Log.i("Results show", results)
         if (results != null) {
             val gson = Gson()
-            val items: ArrayList<BaseFilm> = gson.fromJson(results, object : TypeToken<ArrayList<Show>>() {}.type)
+            val items: ArrayList<BaseFilm?> = gson.fromJson(results, object : TypeToken<ArrayList<Show>>() {}.type)
             Log.i("Items show", items.toString())
             mListAdapter.setItems(items)
-            mListAdapter.notifyDataSetChanged()
         }
     }
 
