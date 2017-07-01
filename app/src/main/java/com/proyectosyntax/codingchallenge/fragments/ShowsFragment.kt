@@ -1,144 +1,107 @@
 package com.proyectosyntax.codingchallenge.fragments
 
-
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.android.volley.*
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
-import com.cooltechworks.views.shimmer.ShimmerRecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.proyectosyntax.codingchallenge.activities.DetailsActivity
 import com.proyectosyntax.codingchallenge.adapters.ListAdapter
 import com.proyectosyntax.codingchallenge.models.BaseFilm
-import com.proyectosyntax.codingchallenge.models.Show
-import com.proyectosyntax.codingchallenge.utils.ObjectSerializer
-import com.proyectosyntax.codingchallenge.utils.RecyclerViewListener
-import com.proyectosyntax.codingchallenge.utils.SpacesItemDecoration
 import org.json.JSONObject
-import com.proyectosyntax.codingchallenge.R
-import java.net.URLEncoder
+import com.proyectosyntax.codingchallenge.models.Show
+import com.proyectosyntax.codingchallenge.utils.*
 
 
-class ShowsFragment : Fragment() {
-    lateinit var mListAdapter: ListAdapter
-    lateinit var titlesList: ShimmerRecyclerView
-    lateinit var parentActivity: Activity
+class ShowsFragment : ListFragment() {
+
+    val listener = Response.Listener<JSONObject> { response -> responseListener(response) }
+    val errorListener = Response.ErrorListener { error -> handleError(error) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        parentActivity = activity
-        mListAdapter = ListAdapter(parentActivity)
-        updateList(arguments.getString("extra"))
+        updateType(CurrentState.Show.type, CurrentState.Show.page)
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater!!.inflate(R.layout.fragment_list, container, false)
-        titlesList = rootView.findViewById(R.id.titlesList) as ShimmerRecyclerView
-        titlesList.showShimmerAdapter()
-        titlesList.addItemDecoration(SpacesItemDecoration())
-
-        titlesList.addOnItemTouchListener(RecyclerViewListener(context, object : RecyclerViewListener.ClickListener {
-            override fun onClick(view: View, position: Int) {
-                val tappedItem = mListAdapter.getItem(position)
-                val intent: Intent = Intent(context, DetailsActivity::class.java)
-                intent.putExtra("item", ObjectSerializer.serialize(tappedItem as Show))
-                intent.putExtra("type", 2)
-                startActivity(intent)
+        val rootView = super.onCreateView(inflater, container, savedInstanceState)
+        val layoutManager = GridLayoutManager(parentActivity, 2)
+        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                when (mListAdapter.getItemViewType(position)) {
+                    ListAdapter.VIEW_TYPE_ITEM -> return 1
+                    else -> return 2
+                }
             }
+        }
 
-
+        titlesList.layoutManager = layoutManager
+        titlesList.addOnScrollListener(RecyclerViewLoadMoreListener(layoutManager, object : RecyclerViewLoadMoreListener.ScrollListener {
+            override fun onLoadMore() {
+                if (!mListAdapter.isLoading) {
+                    mListAdapter.isLoading = true
+                    CurrentState.Show.page++
+                    if (CurrentState.search != null)
+                        updateSearch(CurrentState.search!!, CurrentState.Show.page)
+                    else if (!CurrentState.categories.isEmpty())
+                        updateCategories(CurrentState.categories.toList(), CurrentState.Show.page)
+                    else
+                        updateType(CurrentState.Show.type, CurrentState.Show.page)
+                }
+            }
         }))
-        titlesList.layoutManager = GridLayoutManager(parentActivity, 2)
-
-        titlesList.adapter = mListAdapter
         return rootView
     }
 
-    fun updateList(extra: String?) {
-        val queue: RequestQueue = Volley.newRequestQueue(parentActivity)
-        val url = "${parentActivity!!.resources.getString(R.string.api_url)}tv/$extra?api_key=${parentActivity!!.resources.getString(R.string.api_key)}"
-        val request = object : JsonObjectRequest(
-                Request.Method.GET, url, null,
-                Response.Listener<JSONObject> { response -> connectionEstablished(response) },
-                Response.ErrorListener { error -> handleError(error) }) {
-            override fun getHeaders(): Map<String, String> {
-                val headers = HashMap<String, String>()
-                headers.put("Content-Type", "application/json")
-                return headers
+
+    override fun updateType(type: String, page: Int) {
+        CurrentState.Show.page = page
+        CurrentState.Show.type = type
+        when (type) {
+            CurrentState.TYPE_POPULAR -> {
+                Requests.getPopularShows(parentActivity, listener, errorListener, page)
+            }
+            CurrentState.TYPE_TOP_RATED -> {
+                Requests.getTopRatedShows(parentActivity, listener, errorListener, page)
             }
         }
-        queue.add(request)
     }
 
-    fun search(keyword: String = "") {
-        val parameters = "query=${URLEncoder.encode(keyword, "utf-8")}"
-        val url = "${parentActivity.resources.getString(R.string.api_url)}search/tv?api_key=${parentActivity.resources.getString(R.string.api_key)}&$parameters"
-
-        Log.i("URL", url)
-
-        mListAdapter.setItems(ArrayList())
-        val queue: RequestQueue = Volley.newRequestQueue(parentActivity)
-        val request = JsonObjectRequest(Request.Method.GET, url, null,
-                Response.Listener<JSONObject> { response -> connectionEstablished(response) },
-                Response.ErrorListener { error -> handleError(error) })
-        queue.add(request)
+    override fun updateSearch(query: String, page: Int) {
+        if (CurrentState.Show.page == 1)
+            mListAdapter.setItems(ArrayList())
+        Requests.searchShows(parentActivity, query, listener, errorListener, page)
     }
 
-    fun filterCategories(categories: List<Pair<Int, String>>) {
-        var parameters = "with_genres="
-        for (i in 0..categories.size - 1) {
-            parameters += categories[i].first.toString() + ","
-        }
-        parameters = parameters.substring(0, parameters.length - 1)
-
-        val url = "${parentActivity.resources.getString(R.string.api_url)}discover/tv?api_key=${parentActivity.resources.getString(R.string.api_key)}&$parameters"
-
-        Log.i("URL", url)
-
-        mListAdapter.setItems(ArrayList())
-        val queue: RequestQueue = Volley.newRequestQueue(parentActivity)
-        val request = JsonObjectRequest(Request.Method.GET, url, null,
-                Response.Listener<JSONObject> { response -> connectionEstablished(response) },
-                Response.ErrorListener { error -> handleError(error) })
-        queue.add(request)
+    override fun updateCategories(categories: List<Pair<Int, String>>, page: Int) {
+        Requests.filterShowsByCategories(parentActivity, categories, listener, errorListener, page)
     }
 
-    private fun connectionEstablished(response: org.json.JSONObject?) {
+    override fun responseListener(response: JSONObject?) {
         val results = response?.getString("results")
-        Log.i("Results show", results)
         if (results != null) {
             val gson = Gson()
             val items: ArrayList<BaseFilm?> = gson.fromJson(results, object : TypeToken<ArrayList<Show>>() {}.type)
-            Log.i("Items show", items.toString())
-            mListAdapter.setItems(items)
+            if (CurrentState.Show.page == 1) {
+                mListAdapter.setItems(items)
+            } else {
+                mListAdapter.isLoading = false
+                mListAdapter.addItems(items)
+            }
         }
     }
 
-    private fun handleError(error: VolleyError?) {
-        Log.e("Error Tv Req", error.toString())
+    override fun handleError(error: VolleyError?) {
+        Log.e("Error Show Req", error.toString())
     }
 
     companion object {
-        var parentActivity: Context? = null
-
-        fun newInstance(pActivity: Context, extra: String): ShowsFragment {
-            android.util.Log.i("new Intance Show", "Called")
-            parentActivity = pActivity
-            val fragment = ShowsFragment()
-            val args = Bundle()
-            args.putString("extra", extra)
-            fragment.arguments = args
-            return fragment
+        fun newInstance(): ShowsFragment {
+            return ShowsFragment()
         }
     }
+
 }

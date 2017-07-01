@@ -94,10 +94,8 @@ class ListAdapter(var context: Context) : RecyclerView.Adapter<RecyclerView.View
     fun addItems(itemsToAdd: ArrayList<BaseFilm?>) {
         val last = items.size - 1
         items.removeAt(last)
-//        items.addAll(last - 1, itemsToAdd)
         items.addAll(itemsToAdd)
         items.add(null)
-//        notifyItemRangeInserted(last - 1, items.size - 2)
         notifyDataSetChanged()
     }
 

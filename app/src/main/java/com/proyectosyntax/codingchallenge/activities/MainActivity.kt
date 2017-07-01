@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Log.i("Categories", categories.toString())
 
         moviesFragment = MoviesFragment.newInstance()
-        showsFragment = ShowsFragment.newInstance(this, CurrentState.TYPE_POPULAR)
+        showsFragment = ShowsFragment.newInstance()
         categoriesFragment = CategoriesFragment.newInstance(categories)
 
 
@@ -101,9 +101,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if (query.isNotBlank()) {
 //                    moviesFragment.search(newText)
                     CurrentState.Movie.page = 1
+                    CurrentState.Show.page = 1
                     CurrentState.search = query
                     moviesFragment.updateSearch(query, CurrentState.Movie.page)
-                    showsFragment.search(query)
+                    showsFragment.updateSearch(query, CurrentState.Show.page)
                 }
                 return true
             }
@@ -134,11 +135,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.nav_popular_shows -> {
                 tabs.getTabAt(2)?.select()
-                showsFragment.updateList(CurrentState.TYPE_POPULAR)
+                CurrentState.Show.page = 1
+                showsFragment.updateType(CurrentState.TYPE_POPULAR, CurrentState.Show.page)
             }
             R.id.nav_top_rated_shows -> {
                 tabs.getTabAt(2)?.select()
-                showsFragment.updateList(CurrentState.TYPE_TOP_RATED)
+                CurrentState.Show.page = 1
+                showsFragment.updateType(CurrentState.TYPE_TOP_RATED, CurrentState.Show.page)
             }
         }
 
@@ -157,13 +160,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         if (CurrentState.categories.size > 0) {
             CurrentState.Movie.page = 1
+            CurrentState.Show.page = 1
             moviesFragment.updateCategories(CurrentState.categories.toList(), CurrentState.Movie.page)
-//            moviesFragment.filterCategories(selectedCategories.toList())
-            showsFragment.filterCategories(CurrentState.categories.toList())
+            showsFragment.updateCategories(CurrentState.categories.toList(), CurrentState.Show.page)
         } else {
             CurrentState.Movie.page = 1
+            CurrentState.Show.page = 1
             moviesFragment.updateType(CurrentState.TYPE_POPULAR, CurrentState.Movie.page)
-            showsFragment.updateList(CurrentState.TYPE_POPULAR)
+            showsFragment.updateType(CurrentState.TYPE_POPULAR, CurrentState.Show.page)
         }
     }
 
