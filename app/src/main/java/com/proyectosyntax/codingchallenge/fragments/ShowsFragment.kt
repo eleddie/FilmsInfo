@@ -80,7 +80,10 @@ class ShowsFragment : ListFragment() {
         Requests.filterShowsByCategories(parentActivity, categories, listener, errorListener, page)
     }
 
-    override fun responseListener(response: JSONObject?):ArrayList<BaseFilm?> {
+    override fun responseListener(response: JSONObject?): ArrayList<BaseFilm?> {
+        if (mSwipeRefreshLayout.isRefreshing){
+            onItemsLoadComplete()
+        }
         val results = response?.getString("results")
         if (results != null) {
             val gson = Gson()
@@ -97,6 +100,20 @@ class ShowsFragment : ListFragment() {
 
     override fun handleError(error: VolleyError?) {
         Log.e("Error Show Req", error.toString())
+    }
+
+    override fun refreshItems() {
+        CurrentState.Show.page = 1
+        if (CurrentState.search != null)
+            updateSearch(CurrentState.search!!, CurrentState.Show.page)
+        else if (!CurrentState.categories.isEmpty())
+            updateCategories(CurrentState.categories.toList(), CurrentState.Show.page)
+        else
+            updateType(CurrentState.Show.type, CurrentState.Show.page)
+    }
+
+    override fun onItemsLoadComplete() {
+        mSwipeRefreshLayout.isRefreshing = false
     }
 
     companion object {

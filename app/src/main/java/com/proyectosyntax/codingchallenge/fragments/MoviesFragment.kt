@@ -84,6 +84,9 @@ class MoviesFragment : ListFragment() {
     }
 
     override fun responseListener(response: JSONObject?): ArrayList<BaseFilm?> {
+        if (mSwipeRefreshLayout.isRefreshing){
+            onItemsLoadComplete()
+        }
         val results = response?.getString("results")
         if (results != null) {
             val gson = Gson()
@@ -100,6 +103,20 @@ class MoviesFragment : ListFragment() {
 
     override fun handleError(error: VolleyError?) {
         Log.e("Error Movie Req", error.toString())
+    }
+
+    override fun refreshItems() {
+        CurrentState.Movie.page = 1
+        if (CurrentState.search != null)
+            updateSearch(CurrentState.search!!, CurrentState.Movie.page)
+        else if (!CurrentState.categories.isEmpty())
+            updateCategories(CurrentState.categories.toList(), CurrentState.Movie.page)
+        else
+            updateType(CurrentState.Movie.type, CurrentState.Movie.page)
+    }
+
+    override fun onItemsLoadComplete() {
+        mSwipeRefreshLayout.isRefreshing = false
     }
 
     companion object {

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.widget.SwipeRefreshLayout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +22,8 @@ abstract class ListFragment : Fragment() {
     lateinit var mListAdapter: ListAdapter
     lateinit var titlesList: ShimmerRecyclerView
     lateinit var parentActivity: Activity
+    lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         parentActivity = activity
@@ -45,13 +48,26 @@ abstract class ListFragment : Fragment() {
 
         }))
 
+        mSwipeRefreshLayout = rootView.findViewById(R.id.mSwipeRefreshLayout) as SwipeRefreshLayout
+
+        mSwipeRefreshLayout.setOnRefreshListener({
+            refreshItems()
+        })
+
+
+
         titlesList.adapter = mListAdapter
         return rootView
     }
+
+    abstract fun refreshItems()
+
+    abstract fun onItemsLoadComplete()
 
     abstract fun updateType(type: String, page: Int)
     abstract fun updateSearch(query: String, page: Int)
     abstract fun updateCategories(categories: List<Pair<Int, String>>, page: Int)
     abstract fun responseListener(response: JSONObject?): ArrayList<BaseFilm?>
     abstract fun handleError(error: VolleyError?)
+
 }
