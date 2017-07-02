@@ -2,19 +2,16 @@ package com.proyectosyntax.codingchallenge.adapters
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
 import com.proyectosyntax.codingchallenge.models.BaseFilm
 import com.proyectosyntax.codingchallenge.models.Movie
 import com.proyectosyntax.codingchallenge.models.Show
 import com.proyectosyntax.codingchallenge.R
 import com.squareup.picasso.Picasso
-import java.util.*
 import kotlin.collections.ArrayList
 
 class ListAdapter(var context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -100,7 +97,7 @@ class ListAdapter(var context: Context) : RecyclerView.Adapter<RecyclerView.View
         notifyDataSetChanged()
     }
 
-    fun getItems() :ArrayList<BaseFilm?>{
+    fun getItems(): ArrayList<BaseFilm?> {
         return items
     }
 

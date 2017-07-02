@@ -9,8 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.proyectosyntax.codingchallenge.adapters.CategoriesAdapter
 import com.proyectosyntax.codingchallenge.R
-import com.proyectosyntax.codingchallenge.utils.RecyclerViewListener
-import com.proyectosyntax.codingchallenge.utils.SpacesItemDecoration
+import com.proyectosyntax.codingchallenge.utils.RecyclerViewClickListener
 
 
 class CategoriesFragment : Fragment() {
@@ -29,7 +28,7 @@ class CategoriesFragment : Fragment() {
         val rootView = inflater!!.inflate(R.layout.categories_list, container, false)
         categoriesList = rootView.findViewById(R.id.categoriesList) as RecyclerView
 
-        categoriesList!!.addOnItemTouchListener(RecyclerViewListener(context, object : RecyclerViewListener.ClickListener {
+        categoriesList!!.addOnItemTouchListener(RecyclerViewClickListener(context, object : RecyclerViewClickListener.ClickListener {
             override fun onClick(view: View, position: Int) {
                 if (mListAdapter!!.selectedItems.get(position, false)) {
                     mListAdapter!!.selectedItems.delete(position)

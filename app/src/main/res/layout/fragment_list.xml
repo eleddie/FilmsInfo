@@ -1,19 +1,13 @@
-<android.support.v4.widget.SwipeRefreshLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mSwipeRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.cooltechworks.views.shimmer.ShimmerRecyclerView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/titlesList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/primary_text"
-        app:demo_child_count="20"
-        app:demo_grid_child_count="2"
-        app:demo_layout="@layout/loading_grid"
-        app:demo_layout_manager_type="grid" />
+        android:background="@color/primary_text" />
 
 
 </android.support.v4.widget.SwipeRefreshLayout>

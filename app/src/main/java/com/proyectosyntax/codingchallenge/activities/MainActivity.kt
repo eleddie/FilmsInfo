@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         navigationView.setNavigationItemSelectedListener(this)
-        navigationView.menu.getItem(0).setChecked(true)
+        navigationView.menu.getItem(0).isChecked = true
 
         val mSectionsPagerAdapter = ViewPagerAdapter(supportFragmentManager)
 

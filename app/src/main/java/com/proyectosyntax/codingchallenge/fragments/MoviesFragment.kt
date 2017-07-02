@@ -1,7 +1,6 @@
 package com.proyectosyntax.codingchallenge.fragments
 
 import android.os.Bundle
-import android.support.v7.widget.GridLayoutManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +8,6 @@ import android.view.ViewGroup
 import com.android.volley.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.proyectosyntax.codingchallenge.adapters.ListAdapter
 import com.proyectosyntax.codingchallenge.models.BaseFilm
 import org.json.JSONObject
 import com.proyectosyntax.codingchallenge.models.Movie
@@ -27,35 +25,21 @@ class MoviesFragment : ListFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = super.onCreateView(inflater, container, savedInstanceState)
-        val layoutManager = GridLayoutManager(parentActivity, 2)
-        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-            override fun getSpanSize(position: Int): Int {
-                when (mListAdapter.getItemViewType(position)) {
-                    ListAdapter.VIEW_TYPE_ITEM -> return 1
-                    else -> return 2
-                }
-            }
-        }
-
-        titlesList.layoutManager = layoutManager
-        titlesList.addOnScrollListener(RecyclerViewLoadMoreListener(layoutManager, object : RecyclerViewLoadMoreListener.ScrollListener {
-            override fun onLoadMore() {
-                if (!mListAdapter.isLoading) {
-                    mListAdapter.isLoading = true
-                    CurrentState.Movie.page++
-                    if (CurrentState.search != null)
-                        updateSearch(CurrentState.search!!, CurrentState.Movie.page)
-                    else if (!CurrentState.categories.isEmpty())
-                        updateCategories(CurrentState.categories.toList(), CurrentState.Movie.page)
-                    else
-                        updateType(CurrentState.Movie.type, CurrentState.Movie.page)
-                }
-            }
-        }))
-        return rootView
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
+    override fun onLoadMoreItems() {
+        if (!mListAdapter.isLoading) {
+            mListAdapter.isLoading = true
+            CurrentState.Movie.page++
+            if (CurrentState.search != null)
+                updateSearch(CurrentState.search!!, CurrentState.Movie.page)
+            else if (!CurrentState.categories.isEmpty())
+                updateCategories(CurrentState.categories.toList(), CurrentState.Movie.page)
+            else
+                updateType(CurrentState.Movie.type, CurrentState.Movie.page)
+        }
+    }
 
     override fun updateType(type: String, page: Int) {
         CurrentState.Movie.page = page
@@ -84,7 +68,7 @@ class MoviesFragment : ListFragment() {
     }
 
     override fun responseListener(response: JSONObject?): ArrayList<BaseFilm?> {
-        if (mSwipeRefreshLayout.isRefreshing){
+        if (mSwipeRefreshLayout.isRefreshing) {
             onItemsLoadComplete()
         }
         val results = response?.getString("results")

@@ -11,44 +11,51 @@ import org.json.JSONObject
 import java.net.URLEncoder
 
 object Requests {
-    fun getPopularMovies(context: Context, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1) {
+    fun getPopularMovies(context: Context, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1): String {
         val url = "${context.resources.getString(R.string.api_url)}movie/popular?api_key=${context.resources.getString(R.string.api_key)}&page=$page"
         makeRequest(context, url, listener, errorListener)
+        return url
     }
 
-    fun getTopRatedMovies(context: Context, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1) {
+    fun getTopRatedMovies(context: Context, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1): String {
         val url = "${context.resources.getString(R.string.api_url)}movie/top_rated?api_key=${context.resources.getString(R.string.api_key)}&page=$page"
         makeRequest(context, url, listener, errorListener)
+        return url
     }
 
-    fun getUpcomingMovies(context: Context, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1) {
+    fun getUpcomingMovies(context: Context, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1): String {
         val url = "${context.resources.getString(R.string.api_url)}movie/upcoming?api_key=${context.resources.getString(R.string.api_key)}&page=$page"
         makeRequest(context, url, listener, errorListener)
+        return url
     }
 
-    fun getPopularShows(context: Context, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1) {
+    fun getPopularShows(context: Context, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1): String {
         val url = "${context.resources.getString(R.string.api_url)}tv/popular?api_key=${context.resources.getString(R.string.api_key)}&page=$page"
         makeRequest(context, url, listener, errorListener)
+        return url
     }
 
-    fun getTopRatedShows(context: Context, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1) {
+    fun getTopRatedShows(context: Context, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1): String {
         val url = "${context.resources.getString(R.string.api_url)}tv/top_rated?api_key=${context.resources.getString(R.string.api_key)}&page=$page"
         makeRequest(context, url, listener, errorListener)
+        return url
     }
 
-    fun searchMovies(context: Context, query: String, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1) {
+    fun searchMovies(context: Context, query: String, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1): String {
         val parameters = "query=${URLEncoder.encode(query, "utf-8")}"
         val url = "${context.resources.getString(R.string.api_url)}search/movie?api_key=${context.resources.getString(R.string.api_key)}&$parameters&page=$page"
         makeRequest(context, url, listener, errorListener)
+        return url
     }
 
-    fun searchShows(context: Context, query: String, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1) {
+    fun searchShows(context: Context, query: String, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1): String {
         val parameters = "query=${URLEncoder.encode(query, "utf-8")}"
         val url = "${context.resources.getString(R.string.api_url)}search/tv?api_key=${context.resources.getString(R.string.api_key)}&$parameters&page=$page"
         makeRequest(context, url, listener, errorListener)
+        return url
     }
 
-    fun filterMoviesByCategories(context: Context, categories: List<Pair<Int, String>>, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1) {
+    fun filterMoviesByCategories(context: Context, categories: List<Pair<Int, String>>, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1): String {
         var parameters = "with_genres="
         for (i in 0..categories.size - 1) {
             parameters += categories[i].first.toString() + ","
@@ -56,9 +63,10 @@ object Requests {
         parameters = parameters.substring(0, parameters.length - 1)
         val url = "${context.resources.getString(R.string.api_url)}discover/movie?api_key=${context.resources.getString(R.string.api_key)}&$parameters&page=$page"
         makeRequest(context, url, listener, errorListener)
+        return url
     }
 
-    fun filterShowsByCategories(context: Context, categories: List<Pair<Int, String>>, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1) {
+    fun filterShowsByCategories(context: Context, categories: List<Pair<Int, String>>, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1): String {
         var parameters = "with_genres="
         for (i in 0..categories.size - 1) {
             parameters += categories[i].first.toString() + ","
@@ -66,12 +74,13 @@ object Requests {
         parameters = parameters.substring(0, parameters.length - 1)
         val url = "${context.resources.getString(R.string.api_url)}discover/tv?api_key=${context.resources.getString(R.string.api_key)}&$parameters&page=$page"
         makeRequest(context, url, listener, errorListener)
+        return url
     }
 
-    private fun makeRequest(context: Context, url: String, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener) {
+    private fun makeRequest(context: Context, url: String, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener): Request<JSONObject> {
         val queue: RequestQueue = Volley.newRequestQueue(context)
         val request = JsonObjectRequest(Request.Method.GET, url, null, listener, errorListener)
-        queue.add(request)
+        return queue.add(request)
     }
 
 }

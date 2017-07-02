@@ -33,7 +33,7 @@ class DetailsActivity : AppCompatActivity() {
         val type = intent.extras.getInt("type")
         val serializedItem = intent.extras.getString("item")
 
-        var title = ""
+        val title:String
 
         val item: BaseFilm
         if (type == 1) {
