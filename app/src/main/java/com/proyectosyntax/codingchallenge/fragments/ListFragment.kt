@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.android.volley.VolleyError
 import com.proyectosyntax.codingchallenge.R
 import com.proyectosyntax.codingchallenge.activities.DetailsActivity
@@ -19,12 +20,15 @@ import com.proyectosyntax.codingchallenge.adapters.ListAdapter
 import com.proyectosyntax.codingchallenge.models.BaseFilm
 import com.proyectosyntax.codingchallenge.models.Movie
 import com.proyectosyntax.codingchallenge.models.Show
-import com.proyectosyntax.codingchallenge.utils.*
+import com.proyectosyntax.codingchallenge.utils.ObjectSerializer
+import com.proyectosyntax.codingchallenge.utils.RecyclerViewClickListener
+import com.proyectosyntax.codingchallenge.utils.RecyclerViewLoadMoreListener
 import org.json.JSONObject
 
 abstract class ListFragment : Fragment() {
     lateinit var mListAdapter: ListAdapter
     lateinit var titlesList: RecyclerView
+    lateinit var empty: TextView
     lateinit var parentActivity: Activity
     lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
 
@@ -37,7 +41,7 @@ abstract class ListFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater!!.inflate(R.layout.fragment_list, container, false)
         titlesList = rootView.findViewById(R.id.titlesList) as RecyclerView
-
+        empty = rootView.findViewById(R.id.empty) as TextView
         titlesList.addItemDecoration(object : RecyclerView.ItemDecoration() {
             override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
                 outRect.left = 2

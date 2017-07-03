@@ -21,11 +21,11 @@ class Movie : BaseFilm() {
         movieSQLite.title = if (title != null) title!!.replace("'", "~") else ""
         movieSQLite.voteAverage = if (voteAverage != null) voteAverage!! else 0f
         movieSQLite.adult = adult
-        movieSQLite.backdropPath = if (backdropPath != null) backdropPath!! else ""
+        movieSQLite.backdropPath = if (backdropPath != null) backdropPath!!.substring(1) else ""
         movieSQLite.popularity = if (popularity != null) popularity!! else 0f
         movieSQLite.voteCount = if (voteCount != null) voteCount!! else 0
         movieSQLite.genreIds = "[" + genreIds.joinToString("],[") + "]"
-        movieSQLite.posterPath = if (posterPath != null) posterPath!! else ""
+        movieSQLite.posterPath = if (posterPath != null) posterPath!!.substring(1) else ""
         movieSQLite.originalLanguage = if (originalLanguage != null) originalLanguage!! else ""
         movieSQLite.overview = if (overview != null) overview!!.replace("'", "~") else ""
         movieSQLite.originalTitle = if (originalTitle != null) originalTitle!!.replace("'", "~") else ""

@@ -1,6 +1,5 @@
 package com.proyectosyntax.codingchallenge.fragments
 
-import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
@@ -77,36 +76,27 @@ class ShowsFragment : ListFragment() {
             onItemsLoadComplete()
         }
         val results = response?.getString("results")
-        if (results != null) {
+        if (results != null && results.isNotEmpty()) {
+            empty.visibility = View.GONE
+            titlesList.visibility = View.VISIBLE
             val gson = Gson()
             val items: ArrayList<BaseFilm?> = gson.fromJson(results, object : TypeToken<ArrayList<Show>>() {}.type)
-            AsyncSave(parentActivity.filesDir.absolutePath).execute(items)
-//            async {await { saveAsync(items, parentActivity) }}
-
-            if (CurrentState.Show.page == 1) {
-                mListAdapter.setItems(items)
+            if (items.isEmpty()) {
+                empty.visibility = View.VISIBLE
+                titlesList.visibility = View.GONE
             } else {
-                mListAdapter.isLoading = false
-                mListAdapter.addItems(items)
+                AsyncSave(parentActivity.filesDir.absolutePath).execute(items)
+                if (CurrentState.Show.page == 1) {
+                    mListAdapter.setItems(items)
+                } else {
+                    mListAdapter.isLoading = false
+                    mListAdapter.addItems(items)
+                }
             }
         }
         return mListAdapter.getItems()
     }
 
-    private fun saveAsync(items: ArrayList<BaseFilm?>, context: Context) {
-        val appPath = context.filesDir.absolutePath
-        val pultusORM: PultusORM = PultusORM("films.db", appPath)
-        var showSQLite: Show.ShowSQLite
-        for ((index, it) in items.withIndex()) {
-            showSQLite = (it as Show).toSQLite()
-            val condition: PultusORMCondition = PultusORMCondition.Builder().eq("id", showSQLite.id).build()
-            if (pultusORM.find(showSQLite, condition).size == 0) {
-                val saved = pultusORM.save(showSQLite)
-                Log.i("Saved Show $index", saved.toString())
-            }
-        }
-        pultusORM.close()
-    }
 
     override fun handleError(error: VolleyError?) {
         Log.e("Error Show Req", error.toString())
@@ -117,13 +107,21 @@ class ShowsFragment : ListFragment() {
         for (it in categoriesSelected) {
             conditionBuilder.and().contains("genreIds", it)
         }
+        if (CurrentState.search != null) {
+            conditionBuilder.and().contains("name", CurrentState.search!!)
+        }
         val condition = conditionBuilder.build()
 
         val items = pultusORM.find(Show.ShowSQLite(), condition)
         val convertedItems = ArrayList<BaseFilm?>()
-        for(item in items)
-            convertedItems.add((item as Show.ShowSQLite).fromSQLite())
-        mListAdapter.setItems(convertedItems)
+        if (items.isEmpty()) {
+            empty.visibility = View.VISIBLE
+            titlesList.visibility = View.GONE
+        } else {
+            for (item in items)
+                convertedItems.add((item as Show.ShowSQLite).fromSQLite())
+            mListAdapter.setItems(convertedItems)
+        }
     }
 
     override fun refreshItems() {
@@ -152,7 +150,6 @@ class ShowsFragment : ListFragment() {
             var movieSQLite: Show.ShowSQLite
             for ((index, it) in list[0].withIndex()) {
                 if (it == null) continue
-                Log.i("Searching in DB", it.toString())
                 movieSQLite = (it as Show).toSQLite()
                 val condition: PultusORMCondition = PultusORMCondition.Builder().eq("id", movieSQLite.id).build()
                 if (pultusORM.find(movieSQLite, condition).size == 0) {

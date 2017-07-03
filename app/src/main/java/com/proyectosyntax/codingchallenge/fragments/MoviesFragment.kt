@@ -1,6 +1,5 @@
 package com.proyectosyntax.codingchallenge.fragments
 
-import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
@@ -82,34 +81,24 @@ class MoviesFragment : ListFragment() {
         val results = response?.getString("results")
         Log.i("Results", results.toString())
         if (results != null) {
+            empty.visibility = View.GONE
+            titlesList.visibility = View.VISIBLE
             val gson = Gson()
             val items: ArrayList<BaseFilm?> = gson.fromJson(results, object : TypeToken<ArrayList<Movie>>() {}.type)
-            AsyncSave(parentActivity.filesDir.absolutePath).execute(items)
-//            async { await { saveAsync(items, parentActivity) } }
-            if (CurrentState.Movie.page == 1) {
-                mListAdapter.setItems(items)
+            if (items.isEmpty()) {
+                empty.visibility = View.VISIBLE
+                titlesList.visibility = View.GONE
             } else {
-                mListAdapter.isLoading = false
-                mListAdapter.addItems(items)
+                AsyncSave(parentActivity.filesDir.absolutePath).execute(items)
+                if (CurrentState.Movie.page == 1) {
+                    mListAdapter.setItems(items)
+                } else {
+                    mListAdapter.isLoading = false
+                    mListAdapter.addItems(items)
+                }
             }
         }
         return mListAdapter.getItems()
-    }
-
-    private fun saveAsync(items: ArrayList<BaseFilm?>, context: Context) {
-        val appPath = context.filesDir.absolutePath
-        val pultusORM: PultusORM = PultusORM("films.db", appPath)
-        var movieSQLite: Movie.MovieSQLite
-        for ((index, it) in items.withIndex()) {
-            movieSQLite = (it as Movie).toSQLite()
-            Log.i("Searching in DB", "Searching ")
-            val condition: PultusORMCondition = PultusORMCondition.Builder().eq("id", movieSQLite.id).build()
-            if (pultusORM.find(movieSQLite, condition).size == 0) {
-                val saved = pultusORM.save(movieSQLite)
-                Log.i("Saved Movie $index", saved.toString())
-            }
-        }
-        pultusORM.close()
     }
 
     override fun handleError(error: VolleyError?) {
@@ -121,14 +110,20 @@ class MoviesFragment : ListFragment() {
         for (it in categoriesSelected) {
             conditionBuilder.and().contains("genreIds", it)
         }
+        if (CurrentState.search != null) {
+            conditionBuilder.and().contains("title", CurrentState.search!!)
+        }
         val condition = conditionBuilder.build()
-
         val items = pultusORM.find(Movie.MovieSQLite(), condition)
         val convertedItems = ArrayList<BaseFilm?>()
-        for (item in items)
-            convertedItems.add((item as Movie.MovieSQLite).fromSQLite())
-        mListAdapter.setItems(convertedItems)
-
+        if (items.isEmpty()) {
+            empty.visibility = View.VISIBLE
+            titlesList.visibility = View.GONE
+        } else {
+            for (item in items)
+                convertedItems.add((item as Movie.MovieSQLite).fromSQLite())
+            mListAdapter.setItems(convertedItems)
+        }
     }
 
     override fun refreshItems() {
@@ -151,14 +146,12 @@ class MoviesFragment : ListFragment() {
         }
     }
 
-
     class AsyncSave(var appPath: String) : AsyncTask<ArrayList<BaseFilm?>, Int, Boolean>() {
         override fun doInBackground(vararg list: ArrayList<BaseFilm?>): Boolean {
             val pultusORM: PultusORM = PultusORM("films.db", appPath)
             var movieSQLite: Movie.MovieSQLite
             for ((index, it) in list[0].withIndex()) {
                 if (it == null) continue
-                Log.i("Searching in DB", it.toString())
                 movieSQLite = (it as Movie).toSQLite()
                 val condition: PultusORMCondition = PultusORMCondition.Builder().eq("id", movieSQLite.id).build()
                 if (pultusORM.find(movieSQLite, condition).size == 0) {
@@ -169,6 +162,7 @@ class MoviesFragment : ListFragment() {
             pultusORM.close()
             return true
         }
+
     }
 
 }

@@ -26,5 +26,6 @@
     <string name="air_date">Fecha al aire:</string>
     <string name="episode_count">Episodios:</string>
     <string name="season_number">Numero de temporada</string>
+    <string name="empty_list">No hay datos para mostrar</string>
 
 </resources>

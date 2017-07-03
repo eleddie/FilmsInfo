@@ -7,12 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import com.proyectosyntax.codingchallenge.R
 import com.proyectosyntax.codingchallenge.models.BaseFilm
 import com.proyectosyntax.codingchallenge.models.Movie
 import com.proyectosyntax.codingchallenge.models.Show
-import com.proyectosyntax.codingchallenge.R
 import com.squareup.picasso.Picasso
-import kotlin.collections.ArrayList
 
 class ListAdapter(var context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var inflater: LayoutInflater = LayoutInflater.from(context)
@@ -44,11 +43,12 @@ class ListAdapter(var context: Context) : RecyclerView.Adapter<RecyclerView.View
                 holder.year.text = current.firstAirDate
 
             }
-
-            Picasso.with(context)
-                    .load("${context.resources.getString(R.string.image_url_500)}${current?.posterPath}")
-                    .placeholder(R.drawable.poster_placeholder)
-                    .into(holder.image)
+            if (current?.posterPath != null) {
+                Picasso.with(context)
+                        .load("${context.resources.getString(R.string.image_url_500)}${current.posterPath}")
+                        .placeholder(R.drawable.poster_placeholder)
+                        .into(holder.image)
+            }
         }
     }
 

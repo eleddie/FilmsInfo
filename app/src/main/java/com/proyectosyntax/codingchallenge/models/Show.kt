@@ -19,11 +19,11 @@ class Show : BaseFilm() {
         movieSQLite.id = id
         movieSQLite.name = name.replace("'", "~")
         movieSQLite.voteAverage = if (voteAverage != null) voteAverage!! else 0f
-        movieSQLite.backdropPath = if (backdropPath != null) backdropPath!! else ""
+        movieSQLite.backdropPath = if (backdropPath != null) backdropPath!!.substring(1) else ""
         movieSQLite.popularity = if (popularity != null) popularity!! else 0f
         movieSQLite.voteCount = if (voteCount != null) voteCount!! else 0
         movieSQLite.genreIds = "[" + genreIds.joinToString("],[") + "]"
-        movieSQLite.posterPath = if (posterPath != null) posterPath!! else ""
+        movieSQLite.posterPath = if (posterPath != null) posterPath!!.substring(1) else ""
         movieSQLite.originalLanguage = if (originalLanguage != null) originalLanguage!! else ""
         movieSQLite.overview = if (overview != null) overview!!.replace("'", "~") else ""
         movieSQLite.originalName = if (originalName != null) originalName!!.replace("'", "~") else ""
