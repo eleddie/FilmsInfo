@@ -31,5 +31,12 @@
         I believe that every moment that I live, doesn\'t matter if it\'s good or bad, always gives me something to learn from.
     </string>
     <string name="hire_you">We want to hire you!!</string>
+    <string name="no_internet">There\'s no internet connection, please try again.</string>
+    <string name="retry">Retry</string>
+    <string name="exit">Exit</string>
+    <string name="seasons">Seasons</string>
+    <string name="air_date">Air date:</string>
+    <string name="episode_count">Episode count:</string>
+    <string name="season_number">Season number:</string>
 
 </resources>

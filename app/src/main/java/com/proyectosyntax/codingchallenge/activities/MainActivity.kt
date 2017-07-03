@@ -1,5 +1,8 @@
 package com.proyectosyntax.codingchallenge.activities
 
+import android.app.SearchManager
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.design.widget.TabLayout
@@ -7,25 +10,22 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.GravityCompat
+import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
-import android.app.SearchManager
-import android.content.Context
-import android.content.Intent
 import android.support.v7.widget.SearchView
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import com.proyectosyntax.codingchallenge.R
 import com.proyectosyntax.codingchallenge.fragments.CategoriesFragment
 import com.proyectosyntax.codingchallenge.fragments.MoviesFragment
-import com.proyectosyntax.codingchallenge.R
 import com.proyectosyntax.codingchallenge.fragments.ShowsFragment
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_main.*
 import com.proyectosyntax.codingchallenge.utils.CurrentState
 import com.proyectosyntax.codingchallenge.utils.ObjectSerializer
-import android.support.v4.view.MenuItemCompat
-import android.view.View
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, CategoriesFragment.OnCategoryItemSelectedListener {
 
@@ -69,6 +69,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         tabs.getTabAt(1)?.select()
         toolbar.title = "Films"
+
     }
 
     override fun onBackPressed() {
@@ -177,6 +178,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (CurrentState.categories.size > 0) {
             CurrentState.Movie.page = 1
             CurrentState.Show.page = 1
+
             moviesFragment.updateCategories(CurrentState.categories.toList(), CurrentState.Movie.page)
             showsFragment.updateCategories(CurrentState.categories.toList(), CurrentState.Show.page)
         } else {
@@ -189,6 +191,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun openAboutMe(view: View) {
         startActivity(Intent(this, AboutActivity::class.java))
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        CurrentState.Movie.page = 1
+        CurrentState.Show.page = 1
+        CurrentState.categories = HashMap()
+        CurrentState.search = null
     }
 
     inner class ViewPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {

@@ -17,4 +17,12 @@ object CurrentState {
         var page = 1
         var type: String = TYPE_POPULAR
     }
+
+    fun getCategoriesString(): String {
+        var categoriesString = "["
+        val categoriesList = categories.toList()
+        for (it in categoriesList)
+            categoriesString += it.first.toString() + "],["
+        return categoriesString.substring(0, categoriesString.length - 1) + "]"
+    }
 }

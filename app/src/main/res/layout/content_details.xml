@@ -92,6 +92,31 @@
             android:paddingTop="16dp"
             android:text="Overview of the movie"
             android:textColor="@android:color/white"
-            android:textSize="16dp" />
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:id="@+id/seasonsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/seasons"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="16sp" />
+
+            <ProgressBar
+                android:id="@+id/loadingSeasons"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

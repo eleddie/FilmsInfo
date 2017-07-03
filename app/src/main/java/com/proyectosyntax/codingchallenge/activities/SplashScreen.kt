@@ -2,6 +2,7 @@ package com.proyectosyntax.codingchallenge.activities
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.support.v7.app.AlertDialog
 import android.util.Log
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -16,6 +17,7 @@ import com.viksaa.sssplash.lib.activity.AwesomeSplash
 import com.viksaa.sssplash.lib.cnst.Flags
 import com.viksaa.sssplash.lib.model.ConfigSplash
 import org.json.JSONObject
+import java.util.*
 
 
 class SplashScreen : AwesomeSplash() {
@@ -25,13 +27,25 @@ class SplashScreen : AwesomeSplash() {
     var doneLoading = false
     var counterCalled = 0
 
+    lateinit var dialog: AlertDialog
+
     lateinit var preferences: SharedPreferences
+    var failedToLoadCategories: Boolean = false
+
+    val language: String = if (Locale.getDefault().isO3Language == "spa") "es-US" else "en-US"
 
     override fun initSplash(configSplash: ConfigSplash) {
+        dialog = AlertDialog.Builder(this)
+                .setMessage(R.string.no_internet)
+                .setPositiveButton(R.string.retry, { _, _ -> getCategoriesFromServer() })
+                .setNegativeButton(R.string.exit, { _, _ -> finish() })
+                .create()
 
         preferences = getSharedPreferences(packageName, Context.MODE_PRIVATE)
         val categoriesSaved = preferences.getString("categories", null)
-        if (categoriesSaved == null)
+        val categoriesLanguage = preferences.getString("categories-lang", null)
+
+        if (categoriesSaved == null || categoriesLanguage != language)
             getCategoriesFromServer()
         else {
             categoriesMap = ObjectSerializer.deserialize(categoriesSaved) as HashMap<Int, String>
@@ -52,19 +66,22 @@ class SplashScreen : AwesomeSplash() {
     }
 
     override fun animationsFinished() {
+        if (failedToLoadCategories) {
+            showDialog()
+            return
+        }
         if (doneLoading) {
-            val i = android.content.Intent(this, MainActivity::class.java)
-            i.putExtra("categories", categoriesMap)
-            startActivity(i)
+            goToMain()
         } else {
             doneAnimation = true
         }
     }
 
     fun getCategoriesFromServer() {
+
         val queue: RequestQueue = Volley.newRequestQueue(this)
-        val urlMovies = "${resources.getString(R.string.api_url)}genre/movie/list?api_key=${resources.getString(R.string.api_key)}"
-        val urlShows = "${resources.getString(R.string.api_url)}genre/tv/list?api_key=${resources.getString(R.string.api_key)}"
+        val urlMovies = "${resources.getString(R.string.api_url)}genre/movie/list?api_key=${resources.getString(R.string.api_key)}&language=$language"
+        val urlShows = "${resources.getString(R.string.api_url)}genre/tv/list?api_key=${resources.getString(R.string.api_key)}&language=$language"
         val successListener = Response.Listener<JSONObject> { response -> connectionEstablished(response) }
         val errorListener = Response.ErrorListener { error -> handleError(error) }
         val moviesRequest = JsonObjectRequest(Request.Method.GET, urlMovies, null, successListener, errorListener)
@@ -73,8 +90,18 @@ class SplashScreen : AwesomeSplash() {
         queue.add(showsRequest)
     }
 
+
+    fun showDialog() {
+        dialog.show()
+    }
+
     fun handleError(error: VolleyError?) {
         Log.e("Error", error.toString())
+        if (!failedToLoadCategories) {
+            failedToLoadCategories = true
+        } else {
+            showDialog()
+        }
     }
 
     fun connectionEstablished(response: JSONObject?) {
@@ -87,18 +114,28 @@ class SplashScreen : AwesomeSplash() {
                 categoriesMap.put(current.getInt("id"), current.getString("name"))
             }
             if (doneAnimation) {
-                val i = android.content.Intent(this, MainActivity::class.java)
-                i.putExtra("categories", categoriesMap)
-                startActivity(i)
+                goToMain()
             } else {
                 doneLoading = true
             }
         }
 
         if (counterCalled == 2) {
-            preferences.edit().putString("categories", ObjectSerializer.serialize(categoriesMap)).apply()
+            val editor = preferences.edit()
+            editor.putString("categories", ObjectSerializer.serialize(categoriesMap))
+            editor.putString("categories-lang", language)
+            editor.apply()
         }
 
+        if (failedToLoadCategories) {
+            goToMain()
+        }
+    }
+
+    fun goToMain() {
+        val i = android.content.Intent(this, MainActivity::class.java)
+        i.putExtra("categories", categoriesMap)
+        startActivity(i)
     }
 
 }
