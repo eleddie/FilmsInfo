@@ -128,7 +128,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         })
 
-
         return true
     }
 
@@ -171,9 +170,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         CurrentState.search = null
         if (CurrentState.categories[item.first] == null) {
             CurrentState.categories.put(item.first, item.second)
-        } else {
+        } else
             CurrentState.categories.remove(item.first)
-        }
+
 
         if (CurrentState.categories.size > 0) {
             CurrentState.Movie.page = 1
@@ -189,9 +188,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    fun openAboutMe(view: View) {
-        startActivity(Intent(this, AboutActivity::class.java))
-    }
+    fun openAboutMe(view: View) = startActivity(Intent(this, AboutActivity::class.java))
 
     override fun onDestroy() {
         super.onDestroy()

@@ -88,9 +88,7 @@ abstract class ListFragment : Fragment() {
 
         titlesList.layoutManager = layoutManager
         titlesList.addOnScrollListener(RecyclerViewLoadMoreListener(layoutManager, object : RecyclerViewLoadMoreListener.ScrollListener {
-            override fun onLoadMore() {
-                onLoadMoreItems()
-            }
+            override fun onLoadMore() = onLoadMoreItems()
         }))
 
         return rootView

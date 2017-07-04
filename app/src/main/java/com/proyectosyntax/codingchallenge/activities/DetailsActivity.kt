@@ -26,9 +26,7 @@ import org.json.JSONObject
 
 
 class DetailsActivity : AppCompatActivity() {
-
     lateinit var categoriesMap: HashMap<Int, String>
-
     val listener = Response.Listener<JSONObject> { response -> responseListener(response) }
 
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
@@ -59,13 +57,12 @@ class DetailsActivity : AppCompatActivity() {
             year.text = item.firstAirDate
             title = item.name
             getSeasons(item)
-
         }
 
         var genresOfMovie = ""
-        for (i in 0..item.genreIds.size - 1) {
+        for (i in 0..item.genreIds.size - 1)
             genresOfMovie += categoriesMap[item.genreIds[i]] + " | "
-        }
+
         genresOfMovie = genresOfMovie.substring(0, genresOfMovie.length - 3)
         genres.text = genresOfMovie
 
@@ -89,9 +86,9 @@ class DetailsActivity : AppCompatActivity() {
             internal var scrollRange = -1
 
             override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
-                if (scrollRange == -1) {
+                if (scrollRange == -1)
                     scrollRange = appBarLayout.totalScrollRange
-                }
+
                 if (scrollRange + verticalOffset == 0) {
                     collapsingToolbarLayout.title = title
                     isShow = true
@@ -101,7 +98,6 @@ class DetailsActivity : AppCompatActivity() {
                 }
             }
         })
-
     }
 
     private fun getSeasons(item: Show) {

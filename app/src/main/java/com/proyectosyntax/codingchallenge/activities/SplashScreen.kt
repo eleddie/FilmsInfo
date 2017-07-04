@@ -70,15 +70,13 @@ class SplashScreen : AwesomeSplash() {
             showDialog()
             return
         }
-        if (doneLoading) {
+        if (doneLoading)
             goToMain()
-        } else {
+        else
             doneAnimation = true
-        }
     }
 
     fun getCategoriesFromServer() {
-
         val queue: RequestQueue = Volley.newRequestQueue(this)
         val urlMovies = "${resources.getString(R.string.api_url)}genre/movie/list?api_key=${resources.getString(R.string.api_key)}&language=$language"
         val urlShows = "${resources.getString(R.string.api_url)}genre/tv/list?api_key=${resources.getString(R.string.api_key)}&language=$language"
@@ -90,18 +88,15 @@ class SplashScreen : AwesomeSplash() {
         queue.add(showsRequest)
     }
 
-
-    fun showDialog() {
-        dialog.show()
-    }
+    fun showDialog() = dialog.show()
 
     fun handleError(error: VolleyError?) {
         Log.e("Error", error.toString())
-        if (!failedToLoadCategories) {
+        if (!failedToLoadCategories)
             failedToLoadCategories = true
-        } else {
+        else
             showDialog()
-        }
+
     }
 
     fun connectionEstablished(response: JSONObject?) {
@@ -113,11 +108,11 @@ class SplashScreen : AwesomeSplash() {
                 val current = genresResponse[i] as JSONObject
                 categoriesMap.put(current.getInt("id"), current.getString("name"))
             }
-            if (doneAnimation) {
+            if (doneAnimation)
                 goToMain()
-            } else {
+            else
                 doneLoading = true
-            }
+
         }
 
         if (counterCalled == 2) {
@@ -127,9 +122,9 @@ class SplashScreen : AwesomeSplash() {
             editor.apply()
         }
 
-        if (failedToLoadCategories) {
+        if (failedToLoadCategories)
             goToMain()
-        }
+
     }
 
     fun goToMain() {

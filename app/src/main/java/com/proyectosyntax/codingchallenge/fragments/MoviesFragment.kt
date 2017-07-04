@@ -29,9 +29,8 @@ class MoviesFragment : ListFragment() {
         updateType(CurrentState.Movie.type, CurrentState.Movie.page)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return super.onCreateView(inflater, container, savedInstanceState)
-    }
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+            super.onCreateView(inflater, container, savedInstanceState)
 
     override fun onLoadMoreItems() {
         if (!mListAdapter.isLoading) {
@@ -50,15 +49,12 @@ class MoviesFragment : ListFragment() {
         CurrentState.Movie.page = page
         CurrentState.Movie.type = type
         when (type) {
-            CurrentState.TYPE_POPULAR -> {
+            CurrentState.TYPE_POPULAR ->
                 Requests.getPopularMovies(parentActivity, listener, errorListener, page)
-            }
-            CurrentState.TYPE_TOP_RATED -> {
+            CurrentState.TYPE_TOP_RATED ->
                 Requests.getTopRatedMovies(parentActivity, listener, errorListener, page)
-            }
-            CurrentState.TYPE_UPCOMING -> {
+            CurrentState.TYPE_UPCOMING ->
                 Requests.getUpcomingMovies(parentActivity, listener, errorListener, page)
-            }
         }
     }
 
@@ -90,9 +86,9 @@ class MoviesFragment : ListFragment() {
                 titlesList.visibility = View.GONE
             } else {
                 AsyncSave(parentActivity.filesDir.absolutePath).execute(items)
-                if (CurrentState.Movie.page == 1) {
+                if (CurrentState.Movie.page == 1)
                     mListAdapter.setItems(items)
-                } else {
+                else {
                     mListAdapter.isLoading = false
                     mListAdapter.addItems(items)
                 }
@@ -107,12 +103,12 @@ class MoviesFragment : ListFragment() {
         val pultusORM: PultusORM = PultusORM("films.db", appPath)
         val categoriesSelected = CurrentState.getCategoriesString().split(",")
         val conditionBuilder: PultusORMCondition.Builder = PultusORMCondition.Builder().contains("genreIds", "")
-        for (it in categoriesSelected) {
+        for (it in categoriesSelected)
             conditionBuilder.and().contains("genreIds", it)
-        }
-        if (CurrentState.search != null) {
+
+        if (CurrentState.search != null)
             conditionBuilder.and().contains("title", CurrentState.search!!)
-        }
+
         val condition = conditionBuilder.build()
         val items = pultusORM.find(Movie.MovieSQLite(), condition)
         val convertedItems = ArrayList<BaseFilm?>()
@@ -141,9 +137,7 @@ class MoviesFragment : ListFragment() {
     }
 
     companion object {
-        fun newInstance(): MoviesFragment {
-            return MoviesFragment()
-        }
+        fun newInstance(): MoviesFragment = MoviesFragment()
     }
 
     class AsyncSave(var appPath: String) : AsyncTask<ArrayList<BaseFilm?>, Int, Boolean>() {
@@ -162,7 +156,6 @@ class MoviesFragment : ListFragment() {
             pultusORM.close()
             return true
         }
-
     }
 
 }

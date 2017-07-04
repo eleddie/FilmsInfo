@@ -27,49 +27,37 @@ class ListAdapter(var context: Context) : RecyclerView.Adapter<RecyclerView.View
         val VIEW_TYPE_LOADING = 1
     }
 
-
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is LoaderHolder) {
-
-        } else if (holder is TitleHolder) {
+        if (holder is TitleHolder) {
             val current = items[position]
 
             if (current is Movie) {
                 holder.title.text = current.title
                 holder.year.text = current.releaseDate
-
             } else if (current is Show) {
                 holder.title.text = current.name
                 holder.year.text = current.firstAirDate
-
             }
-            if (current?.posterPath != null) {
+
+            if (current?.posterPath != null)
                 Picasso.with(context)
                         .load("${context.resources.getString(R.string.image_url_500)}${current.posterPath}")
                         .placeholder(R.drawable.poster_placeholder)
                         .into(holder.image)
-            }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
-        if (viewType == VIEW_TYPE_ITEM) {
-            val view: View = inflater.inflate(R.layout.item, parent, false)
-            return TitleHolder(view)
-        } else {
-            val view: View = inflater.inflate(R.layout.item_loading, parent, false)
-            return LoaderHolder(view)
-        }
+        if (viewType == VIEW_TYPE_ITEM)
+            return TitleHolder(inflater.inflate(R.layout.item, parent, false))
+        else
+            return LoaderHolder(inflater.inflate(R.layout.item_loading, parent, false))
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return if (items[position] == null) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
-    }
+    override fun getItemViewType(position: Int): Int = if (items[position] == null) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
 
-    override fun getItemCount(): Int {
-        return items.size
-    }
 
+    override fun getItemCount(): Int = items.size
 
     inner class TitleHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var image: ImageView = itemView.findViewById(R.id.movieImage) as ImageView
@@ -85,9 +73,7 @@ class ListAdapter(var context: Context) : RecyclerView.Adapter<RecyclerView.View
         notifyDataSetChanged()
     }
 
-    fun getItem(position: Int): BaseFilm? {
-        return items[position]
-    }
+    fun getItem(position: Int): BaseFilm? = items[position]
 
     fun addItems(itemsToAdd: ArrayList<BaseFilm?>) {
         val last = items.size - 1
@@ -97,8 +83,6 @@ class ListAdapter(var context: Context) : RecyclerView.Adapter<RecyclerView.View
         notifyDataSetChanged()
     }
 
-    fun getItems(): ArrayList<BaseFilm?> {
-        return items
-    }
+    fun getItems(): ArrayList<BaseFilm?> = items
 
 }

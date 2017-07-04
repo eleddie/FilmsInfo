@@ -1,7 +1,7 @@
 package com.proyectosyntax.codingchallenge.utils
 
-import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 
 
 class RecyclerViewLoadMoreListener(var layoutManager: LinearLayoutManager, var scrollListener: ScrollListener) : RecyclerView.OnScrollListener() {
@@ -9,9 +9,8 @@ class RecyclerViewLoadMoreListener(var layoutManager: LinearLayoutManager, var s
         super.onScrolled(recyclerView, dx, dy)
         val totalItemCount = layoutManager.itemCount
         val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
-        if (totalItemCount <= (lastVisibleItem + 5)) {
+        if (totalItemCount <= (lastVisibleItem + 5))
             scrollListener.onLoadMore()
-        }
     }
 
     interface ScrollListener {

@@ -15,7 +15,7 @@ class CategoriesAdapter(var context: android.content.Context, private var items:
     override fun onBindViewHolder(holder: CategoriesAdapter.MyHolder?, position: Int) {
         val current = items.toList()[position]
         holder!!.name.text = current.second
-        holder.cBox.setChecked(selectedItems.get(position, false))
+        holder.cBox.isChecked = selectedItems.get(position, false)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): CategoriesAdapter.MyHolder {
@@ -24,10 +24,7 @@ class CategoriesAdapter(var context: android.content.Context, private var items:
         return holder
     }
 
-
-    override fun getItemCount(): Int {
-        return items.size
-    }
+    override fun getItemCount(): Int = items.size
 
     inner class MyHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var name: TextView = itemView.findViewById(R.id.category_name) as TextView
@@ -35,7 +32,6 @@ class CategoriesAdapter(var context: android.content.Context, private var items:
 
     }
 
-    fun getItem(position: Int): Pair<Int, String> {
-        return items[position]
-    }
+    fun getItem(position: Int): Pair<Int, String> = items[position]
+
 }

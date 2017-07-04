@@ -29,9 +29,9 @@ class ShowsFragment : ListFragment() {
         updateType(CurrentState.Show.type, CurrentState.Show.page)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return super.onCreateView(inflater, container, savedInstanceState)
-    }
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+            super.onCreateView(inflater, container, savedInstanceState)
+
 
     override fun onLoadMoreItems() {
         if (!mListAdapter.isLoading) {
@@ -50,12 +50,10 @@ class ShowsFragment : ListFragment() {
         CurrentState.Show.page = page
         CurrentState.Show.type = type
         when (type) {
-            CurrentState.TYPE_POPULAR -> {
+            CurrentState.TYPE_POPULAR ->
                 Requests.getPopularShows(parentActivity, listener, errorListener, page)
-            }
-            CurrentState.TYPE_TOP_RATED -> {
+            CurrentState.TYPE_TOP_RATED ->
                 Requests.getTopRatedShows(parentActivity, listener, errorListener, page)
-            }
         }
     }
 
@@ -72,9 +70,9 @@ class ShowsFragment : ListFragment() {
     }
 
     override fun responseListener(response: JSONObject?): ArrayList<BaseFilm?> {
-        if (mSwipeRefreshLayout.isRefreshing) {
+        if (mSwipeRefreshLayout.isRefreshing)
             onItemsLoadComplete()
-        }
+
         val results = response?.getString("results")
         if (results != null && results.isNotEmpty()) {
             empty.visibility = View.GONE
@@ -86,9 +84,9 @@ class ShowsFragment : ListFragment() {
                 titlesList.visibility = View.GONE
             } else {
                 AsyncSave(parentActivity.filesDir.absolutePath).execute(items)
-                if (CurrentState.Show.page == 1) {
+                if (CurrentState.Show.page == 1)
                     mListAdapter.setItems(items)
-                } else {
+                else {
                     mListAdapter.isLoading = false
                     mListAdapter.addItems(items)
                 }
@@ -104,12 +102,12 @@ class ShowsFragment : ListFragment() {
         val pultusORM: PultusORM = PultusORM("films.db", appPath)
         val categoriesSelected = CurrentState.getCategoriesString().split(",")
         val conditionBuilder: PultusORMCondition.Builder = PultusORMCondition.Builder().contains("genreIds", "")
-        for (it in categoriesSelected) {
+        for (it in categoriesSelected)
             conditionBuilder.and().contains("genreIds", it)
-        }
-        if (CurrentState.search != null) {
+
+        if (CurrentState.search != null)
             conditionBuilder.and().contains("name", CurrentState.search!!)
-        }
+
         val condition = conditionBuilder.build()
 
         val items = pultusORM.find(Show.ShowSQLite(), condition)
@@ -139,9 +137,7 @@ class ShowsFragment : ListFragment() {
     }
 
     companion object {
-        fun newInstance(): ShowsFragment {
-            return ShowsFragment()
-        }
+        fun newInstance(): ShowsFragment = ShowsFragment()
     }
 
     class AsyncSave(var appPath: String) : AsyncTask<ArrayList<BaseFilm?>, Int, Boolean>() {

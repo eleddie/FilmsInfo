@@ -60,9 +60,8 @@ object Requests {
 
     fun filterMoviesByCategories(context: Context, categories: List<Pair<Int, String>>, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1): String {
         var parameters = "with_genres="
-        for (i in 0..categories.size - 1) {
+        for (i in 0..categories.size - 1)
             parameters += categories[i].first.toString() + ","
-        }
         parameters = parameters.substring(0, parameters.length - 1)
         val url = "${context.resources.getString(R.string.api_url)}discover/movie?api_key=${context.resources.getString(R.string.api_key)}&$parameters&page=$page&language=$language"
         makeRequest(context, url, listener, errorListener)
@@ -71,9 +70,8 @@ object Requests {
 
     fun filterShowsByCategories(context: Context, categories: List<Pair<Int, String>>, listener: Response.Listener<JSONObject>, errorListener: Response.ErrorListener, page: Int = 1): String {
         var parameters = "with_genres="
-        for (i in 0..categories.size - 1) {
+        for (i in 0..categories.size - 1)
             parameters += categories[i].first.toString() + ","
-        }
         parameters = parameters.substring(0, parameters.length - 1)
         val url = "${context.resources.getString(R.string.api_url)}discover/tv?api_key=${context.resources.getString(R.string.api_key)}&$parameters&page=$page&language=$language"
         makeRequest(context, url, listener, errorListener)
@@ -91,6 +89,5 @@ object Requests {
         val request = JsonObjectRequest(Request.Method.GET, url, null, listener, errorListener)
         return queue.add(request)
     }
-
 
 }
