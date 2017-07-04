@@ -12,9 +12,9 @@ class CategoriesAdapter(var context: android.content.Context, private var items:
     private var inflater: LayoutInflater = LayoutInflater.from(context)
     val selectedItems: android.util.SparseBooleanArray = android.util.SparseBooleanArray()
 
-    override fun onBindViewHolder(holder: CategoriesAdapter.MyHolder?, position: Int) {
+    override fun onBindViewHolder(holder: CategoriesAdapter.MyHolder, position: Int) {
         val current = items.toList()[position]
-        holder!!.name.text = current.second
+        holder.name.text = current.second
         holder.cBox.isChecked = selectedItems.get(position, false)
     }
 

@@ -56,7 +56,6 @@ class ListAdapter(var context: Context) : RecyclerView.Adapter<RecyclerView.View
 
     override fun getItemViewType(position: Int): Int = if (items[position] == null) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
 
-
     override fun getItemCount(): Int = items.size
 
     inner class TitleHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

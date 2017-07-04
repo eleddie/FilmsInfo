@@ -97,12 +97,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             override fun onQueryTextSubmit(query: String): Boolean {
                 Log.i("Search query submit", query)
                 if (query.isNotBlank()) {
-                    CurrentState.categories.clear()
-                    CurrentState.Movie.page = 1
-                    CurrentState.Show.page = 1
-                    CurrentState.search = query
-                    moviesFragment.updateSearch(query, CurrentState.Movie.page)
-                    showsFragment.updateSearch(query, CurrentState.Show.page)
+                    startSearch(query)
                     searchView.clearFocus()
                 }
                 return true
@@ -120,15 +115,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
                 Log.i("menuItemActionCollapse", "Called")
                 CurrentState.search = null
-                CurrentState.Movie.page = 1
-                CurrentState.Show.page = 1
+                resetPages()
                 moviesFragment.updateType(CurrentState.TYPE_POPULAR, CurrentState.Movie.page)
                 showsFragment.updateType(CurrentState.TYPE_POPULAR, CurrentState.Show.page)
                 return true
             }
         })
-
         return true
+    }
+
+    fun resetPages() {
+        CurrentState.Movie.page = 1
+        CurrentState.Show.page = 1
+    }
+
+    fun startSearch(query: String) {
+        CurrentState.categories.clear()
+        resetPages()
+        CurrentState.search = query
+        moviesFragment.updateSearch(query, CurrentState.Movie.page)
+        showsFragment.updateSearch(query, CurrentState.Show.page)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -175,14 +181,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         if (CurrentState.categories.size > 0) {
-            CurrentState.Movie.page = 1
-            CurrentState.Show.page = 1
-
+            resetPages()
             moviesFragment.updateCategories(CurrentState.categories.toList(), CurrentState.Movie.page)
             showsFragment.updateCategories(CurrentState.categories.toList(), CurrentState.Show.page)
         } else {
-            CurrentState.Movie.page = 1
-            CurrentState.Show.page = 1
+            resetPages()
             moviesFragment.updateType(CurrentState.TYPE_POPULAR, CurrentState.Movie.page)
             showsFragment.updateType(CurrentState.TYPE_POPULAR, CurrentState.Show.page)
         }
@@ -192,8 +195,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onDestroy() {
         super.onDestroy()
-        CurrentState.Movie.page = 1
-        CurrentState.Show.page = 1
+        resetPages()
         CurrentState.categories = HashMap()
         CurrentState.search = null
     }

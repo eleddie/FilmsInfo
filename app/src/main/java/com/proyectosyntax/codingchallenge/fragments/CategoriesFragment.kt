@@ -7,15 +7,15 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.proyectosyntax.codingchallenge.adapters.CategoriesAdapter
 import com.proyectosyntax.codingchallenge.R
+import com.proyectosyntax.codingchallenge.adapters.CategoriesAdapter
 import com.proyectosyntax.codingchallenge.utils.RecyclerViewClickListener
 
 
 class CategoriesFragment : Fragment() {
 
-    var mListAdapter: CategoriesAdapter? = null
-    var categoriesList: RecyclerView? = null
+    lateinit var mListAdapter: CategoriesAdapter
+    lateinit var categoriesList: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,19 +28,19 @@ class CategoriesFragment : Fragment() {
         val rootView = inflater!!.inflate(R.layout.categories_list, container, false)
         categoriesList = rootView.findViewById(R.id.categoriesList) as RecyclerView
 
-        categoriesList!!.addOnItemTouchListener(RecyclerViewClickListener(context, object : RecyclerViewClickListener.ClickListener {
+        categoriesList.addOnItemTouchListener(RecyclerViewClickListener(context, object : RecyclerViewClickListener.ClickListener {
             override fun onClick(view: View, position: Int) {
-                if (mListAdapter!!.selectedItems.get(position, false)) {
-                    mListAdapter!!.selectedItems.delete(position)
-                } else {
-                    mListAdapter!!.selectedItems.put(position, true)
-                }
-                mListAdapter!!.notifyItemChanged(position)
-                (activity as OnCategoryItemSelectedListener).onCategoryItemPicked(mListAdapter!!.getItem(position))
+                if (mListAdapter.selectedItems.get(position, false))
+                    mListAdapter.selectedItems.delete(position)
+                else
+                    mListAdapter.selectedItems.put(position, true)
+
+                mListAdapter.notifyItemChanged(position)
+                (activity as OnCategoryItemSelectedListener).onCategoryItemPicked(mListAdapter.getItem(position))
             }
         }))
-        categoriesList!!.layoutManager = GridLayoutManager(activity, 2)
-        categoriesList!!.adapter = mListAdapter
+        categoriesList.layoutManager = GridLayoutManager(activity, 2)
+        categoriesList.adapter = mListAdapter
         return rootView
     }
 
@@ -56,7 +56,7 @@ class CategoriesFragment : Fragment() {
     }
 
     interface OnCategoryItemSelectedListener {
-        fun onCategoryItemPicked(item: Pair<Int,String>)
+        fun onCategoryItemPicked(item: Pair<Int, String>)
     }
 
 }
